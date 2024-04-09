@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SitecoreSend.SDK", "SitecoreSend.SDK\SitecoreSend.SDK.csproj", "{D4A9A819-D2BC-4581-A099-5E9DE086CC2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SitecoreSend.SDK.Tests", "SitecoreSend.SDK.Tests\SitecoreSend.SDK.Tests.csproj", "{EC1A7483-81CC-44FE-9B1D-B1D7EB1FF981}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D4A9A819-D2BC-4581-A099-5E9DE086CC2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A9A819-D2BC-4581-A099-5E9DE086CC2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A9A819-D2BC-4581-A099-5E9DE086CC2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A9A819-D2BC-4581-A099-5E9DE086CC2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC1A7483-81CC-44FE-9B1D-B1D7EB1FF981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC1A7483-81CC-44FE-9B1D-B1D7EB1FF981}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC1A7483-81CC-44FE-9B1D-B1D7EB1FF981}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC1A7483-81CC-44FE-9B1D-B1D7EB1FF981}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
