@@ -11,8 +11,6 @@ namespace SitecoreSend.SDK
         private readonly HttpClient _httpClient;
         private readonly ApiConfiguration _apiConfiguration;
 
-        // TODO: handle http errors
-
         protected BaseApiService(ApiConfiguration apiConfiguration, HttpClient httpClient)
         {
             _apiConfiguration = apiConfiguration;

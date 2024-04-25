@@ -2,6 +2,6 @@
 {
     public abstract class BasePagingResponse
     {
-        public Paging Paging { get; set; }
+        public Paging? Paging { get; set; }
     }
 }

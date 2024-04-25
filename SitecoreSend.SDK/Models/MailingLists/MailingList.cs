@@ -6,7 +6,7 @@ namespace SitecoreSend.SDK
     public class MailingList
     {
         public Guid ID { get; set; }
-        public string Name { get; set; }
+        public required string Name { get; set; }
         public int ActiveMemberCount { get; set; }
         public int BouncedMemberCount { get; set; }
         public int RemovedMemberCount { get; set; }

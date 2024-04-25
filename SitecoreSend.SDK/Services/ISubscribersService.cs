@@ -1,5 +1,6 @@
 ﻿namespace SitecoreSend.SDK
 {
+    // TODO: add documentation
     public interface ISubscribersService
     {
         Task<SendResponse<SubscribersResponse>?> GetAllSubscribers(Guid listId, SubscriberStatus status = SubscriberStatus.Subscribed,
@@ -15,13 +16,6 @@
         Task<SendResponse<Subscriber>?> AddSubscriber(Guid listId, SubscriberRequest request,
             CancellationToken? cancellationToken = null);
 
-        /// <summary>
-        /// Note: works only for non-unsubscribed customers
-        /// </summary>
-        /// <param name="listId"></param>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         Task<SendResponse<IList<Subscriber>>?> AddMultipleSubscribers(Guid listId,
             MultipleSubscribersRequest request, CancellationToken? cancellationToken = null);
 
@@ -38,6 +32,18 @@
         Task<SendResponse?> RemoveSubscriberFromList(Guid listId, string email,
             CancellationToken? cancellationToken = null);
 
+        // TODO: fix response
+        /*
+         *{
+  "Code": 0,
+  "Error": null,
+  "Context": {
+    "EmailsIgnored": 0,
+    "EmailsProcessed": 3
+  }
+}
+         * 
+         */
         Task<SendResponse?> RemoveMultipleSubscribersFromList(Guid listId, string[] emails,
             CancellationToken? cancellationToken = null);
     }

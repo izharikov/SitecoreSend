@@ -7,8 +7,8 @@ namespace SitecoreSend.SDK
     [JsonConverter(typeof(SubscriberCustomFieldConverter))]
     public class SubscriberCustomField
     {
-        public string CustomFieldID { get; set; }
-        public string Name { get; set; }
+        public string? CustomFieldID { get; set; }
+        public required string Name { get; set; }
         public object? Value { get; set; }
         [JsonIgnore]
         internal bool IsDateField { get; set; }
@@ -25,8 +25,8 @@ namespace SitecoreSend.SDK
 
     internal class InternalSubscriberCustomField
     {
-        public string CustomFieldID { get; set; }
-        public string Name { get; set; }
+        public string? CustomFieldID { get; set; }
+        public required string Name { get; set; }
         public JsonElement Value { get; set; }
     }
 }

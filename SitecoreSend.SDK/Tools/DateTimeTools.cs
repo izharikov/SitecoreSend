@@ -19,7 +19,7 @@
                 return default;
             }
             // Extracting the timestamp value
-            var timestampString = dateString.Substring(6, dateString.Length - 8);
+            var timestampString = dateString!.Substring(6, dateString.Length - 8);
         
             // Converting the timestamp to a long
             long timestamp;

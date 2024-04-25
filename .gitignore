@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 *.local.json
 .idea
+*.csproj.DotSettings
