@@ -2,18 +2,27 @@
 
     <PropertyGroup>
         <PackageId>SitecoreSend.SDK</PackageId>
-        <Version>0.1.2-preview-2</Version>
+        <Version>0.1.4-alpha</Version>
         <Authors>Igor Zharikov</Authors>
         <Company>Brimit</Company>
         <TargetFrameworks>net6.0;netstandard2.0;net461</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReadmeFile>.\README.MD</PackageReadmeFile>
+        <PackageTags>Sitecore;Sitecore Send;API</PackageTags>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include=".\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\README.MD" Pack="true" PackagePath="\" />
+        <None Include="images\icon.png" Pack="true" PackagePath="\"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
     </ItemGroup>
     
     <ItemGroup Condition=" '$(TargetFramework)' == 'net461' or  '$(TargetFramework)' == 'netstandard2.0'">

@@ -1,0 +1,3308 @@
+openapi: 3.0.0
+info:
+  title: Sitecore Send API
+  description: Sitecore Send API
+  version: latest
+security:
+  - ApiKeyAuth: [] 
+servers:
+  - url: https://api.sitecoresend.io/v3
+paths:
+# Campaigns
+  /campaigns/{Page}.{Format}:
+    get:
+      summary: Get all campaigns by page
+      description: Retrieves a list of all campaigns in your Sitecore Send account with detailed information.
+      tags:
+        - Campaigns
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          description: The supported file format for getting a response.
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Page
+          in: path
+          required: true
+          description: The page number to display results for.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Code:
+                    type: integer
+                    description: The response code. This is 0 if successful.
+                  Error:
+                    type: string
+                    nullable: true
+                    description: The response error message. This is null if successful.
+                  Context:
+                    type: object
+                    description: An object containing all the information for the requested campaigns.
+                    properties:
+                      Paging:
+                        $ref: '#/components/schemas/Paging'
+                      Campaigns:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Campaign'
+  /campaigns/{Page}/{PageSize}.{Format}:
+    get:
+      summary: Get all campaigns by page and page size
+      description: Retrieves a list of all campaigns in your Sitecore Send account with detailed information. Because the results for this call could be quite big, you can add paging and sorting information as inputs.
+      tags:
+        - Campaigns
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          description: The supported file format for getting a response.
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Page
+          in: path
+          required: true
+          description: The page number to display results for.
+          schema:
+            type: integer
+        - name: PageSize
+          in: path
+          required: true
+          description: The maximum number of results per page. This must be a positive integer up to 100. Returns 10 results per page if not specified. If a value greater than 100 is specified, it is treated as 100.
+          schema:
+            type: integer
+        - name: SortBy
+          in: query
+          required: false
+          description: The name of the campaign property to sort results by.
+          schema:
+            $ref: '#/components/schemas/CampaignsSortBy'
+        - name: SortMethod
+          in: query
+          required: false
+          description: Specifies the method to sort results.
+          schema:
+            $ref: '#/components/schemas/SortMethod'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Code:
+                    type: integer
+                    description: The response code. This is 0 if successful.
+                  Error:
+                    type: string
+                    nullable: true
+                    description: The response error message. This is null if successful.
+                  Context:
+                    type: object
+                    description: An object containing all the information for the requested campaigns.
+                    properties:
+                      Paging:
+                        $ref: '#/components/schemas/Paging'
+                      Campaigns:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Campaign'
+  /campaigns/{CampaignID}/view.{Format}:
+    get:
+      summary: Get campaign details
+      description: Retrieves the details about a specific campaign in your Sitecore Send account. No statistics are included in the result.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          description: The ID of the campaign that contains the details you are requesting.
+          schema:
+            type: string
+        - name: Format
+          in: path
+          required: true
+          description: The supported file format for getting a response.
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignDetailsResponse'
+  /campaigns/create.{Format}:
+    post:
+      summary: Create a draft campaign
+      description: Creates a new draft campaign in your account that is ready for sending or testing.
+      tags:
+        - Campaigns
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDraftCampaignRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDraftCampaignResponse'
+  /campaigns/{CampaignID}/clone.{Format}:
+    post:
+      summary: Clone an existing campaign
+      description: Clones or creates an exact copy of an existing campaign in your Sitecore Send account.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to clone.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloneCampaignResponse'
+  /campaigns/{CampaignID}/delete.{Format}:
+    delete:
+      summary: Delete a campaign
+      description: Deletes a draft or a sent campaign from your Sitecore Send account.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the draft or sent campaign that you want to delete.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCampaignResponse'
+  /campaigns/{CampaignID}/update.{Format}:
+    post:
+      summary: Update a draft campaign
+      description: Updates the details of an existing draft campaign in your account.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to update.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCampaignRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCampaignResponse'
+  /campaigns/{CampaignID}/send_test.{Format}:
+    post:
+      summary: Test a campaign
+      description: Tests and previews a draft campaign by sending it to a list of email addresses.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the draft campaign that you want to test.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestCampaignRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestCampaignResponse'
+  /campaigns/{CampaignID}/send.{Format}:
+    post:
+      summary: Send a campaign
+      description: Sends a draft campaign immediately to all recipients in the email list you've selected for the campaign.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the draft campaign that you want to send.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SendCampaignResponse'
+  /campaigns/{CampaignID}/schedule.{Format}:
+    post:
+      summary: Schedule a campaign
+      description: Schedules the delivery of a campaign by assigning a specific date and time.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to schedule.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleCampaignRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleCampaignResponse'
+  /campaigns/{CampaignID}/unschedule.{Format}:
+    post:
+      summary: Unschedule a campaign
+      description: Removes a previously scheduled date and time for delivering a campaign. If already queued, the campaign is sent immediately.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to unschedule.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnscheduleCampaignResponse'
+  /campaigns/{CampaignID}/stats/{Type}.{Format}:
+    get:
+      summary: Get campaign statistics by Type
+      description: Retrieves a list of statistics for a specific campaign based on activity such as emails sent, opened, bounced, links clicked, and so on.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you are fetching statistics for.
+        - name: Type
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/CampaignStatisticsType'
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            description: The specific year, month, and day the activity occurred. The date has a YYYY/MM/DD format.
+            example: '2024/10/30'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStatsResponse'
+  /campaigns/{CampaignID}/stats.{Format}:
+    get:
+      summary: Get campaign statistics
+      description: Retrieves a list of statistics for a specific campaign based on activity such as emails sent, opened, bounced, links clicked, and so on.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you are fetching statistics for.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            description: The specific year, month, and day the activity occurred. The date has a YYYY/MM/DD format.
+            example: '2024/10/30'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStatsResponse'
+  /campaigns/{CampaignID}/stats/{Type}.{Format}/:
+    get:
+      summary: Get campaign statistics by Type with paging and filter
+      description: Retrieves a list of statistics for a specific campaign based on activity such as emails sent, opened, bounced, links clicked, and so on.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you are fetching statistics for.
+        - name: Type
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/CampaignStatisticsType'
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Page
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The page number to display results for. If not specified, the first page is returned.
+        - name: PageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of results per page. This must be a positive integer up to 100. Returns 50 results per page if not specified. If a value greater than 100 is specified, it is treated as 100.
+        - name: From
+          in: query
+          required: false
+          schema:
+            type: string
+            description: The start date value to return results. If not specified, results are returned from the date the campaign was sent. From date has a DD-MM-YYYY format.
+            example: '30-10-2024'
+        - name: To
+          in: query
+          required: false
+          schema:
+            type: string
+            description: The end date value to return results. If not specified, results are returned up to the current date. To date has a DD-MM-YYYY format.
+            example: '30-10-2024'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStatsResponse'
+  /campaigns/{CampaignID}/stats.{Format}/:
+    get:
+      summary: Get campaign statistics with paging and filter
+      description: Retrieves a list of statistics for a specific campaign based on activity such as emails sent, opened, bounced, links clicked, and so on.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you are fetching statistics for.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Page
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The page number to display results for. If not specified, the first page is returned.
+        - name: PageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            description: The maximum number of results per page. This must be a positive integer up to 100. Returns 50 results per page if not specified. If a value greater than 100 is specified, it is treated as 100.
+        - name: From
+          in: query
+          required: false
+          schema:
+            type: string
+            description: The start date value to return results. If not specified, results are returned from the date the campaign was sent. From date has a DD-MM-YYYY format.
+            example: '30-10-2024'
+        - name: To
+          in: query
+          required: false
+          schema:
+            type: string
+            description: The end date value to return results. If not specified, results are returned up to the current date. To date has a DD-MM-YYYY format.
+            example: '30-10-2024'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStatsResponse'
+  /campaigns/{CampaignID}/view_summary.{Format}:
+    get:
+      summary: Get campaign summary
+      description: Retrieves a summary of results for a specific sent campaign. The summary includes information such as the number of recipients, opens, clicks, bounces, unsubscribes, forwards, and so on, to date.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to get a summary of.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignSummaryResponse'
+  /campaigns/{CampaignID}/stats/countries.{Format}:
+    get:
+      summary: Get campaign activity by location
+      description: Retrieves the details about a specific campaign's unique or total opens by location.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to get the activity by location of.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStatsResponse'
+  /campaigns/{CampaignID}/stats/links.{Format}:
+    get:
+      summary: Get campaign link activity
+      description: Retrieves a list of all the links in a specific campaign and the number of unique or total link clicks made by campaign recipients.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the campaign that you want to get the activity by location of.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignStatsResponse'
+  /campaigns/{CampaignID}/view_ab_summary.{Format}:
+    get:
+      summary: Get A/B campaign summary
+      description: Retrieves a summary of results of a specific sent A/B campaign.
+      tags:
+        - Campaigns
+      parameters:
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the A/B campaign that you want to get a summary of.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ABCampaignSummaryResponse'
+
+# Senders
+  /senders/find_all.{Format}:
+    get:
+      summary: Get all senders
+      description: Retrieves a list of all the active campaign senders in your Sitecore Send account.
+      tags:
+        - Senders
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAllSendersResponse'
+  /senders/find_one.{Format}:
+    get:
+      summary: Get sender details
+      description: Retrieves the details about a specific campaign sender using the sender's email address.
+      tags:
+        - Senders
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Email
+          in: query
+          required: true
+          schema:
+            type: string
+            description: The email address of the sender that contains the details you are requesting.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSenderDetailsResponse'
+
+# Mailing Lists
+  /lists.{Format}:
+    get:
+      summary: Get all active mailing lists
+      description: Retrieves a list of all the active email lists in your Sitecore Send account.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: WithStatistics
+          in: query
+          required: false
+          schema:
+            type: boolean
+            enum: [true, false]
+        - name: ShortBy
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ShortByEnum'
+        - name: SortMethod
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/SortMethod'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Code:
+                    type: integer
+                    description: The response code. This is 0 if successful.
+                  Error:
+                    type: string
+                    nullable: true
+                    description: The response error message. This is null if successful.
+                  Context:
+                    type: object
+                    description: An object containing all the information for the requested campaigns.
+                    properties:
+                      Paging:
+                        $ref: '#/components/schemas/Paging'
+                  MailingLists:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MailingList'
+  /lists/{MailingListID}/details.{Format}:
+    get:
+      summary: Get mailing list details
+      description: Retrieves the details about a specific email list in your account.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list that contains the details you are requesting.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: WithStatistics
+          in: query
+          required: false
+          schema:
+            type: boolean
+            enum: [true, false]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailingListDetailsResponse'
+  /lists/{Page}/{PageSize}.{Format}:
+    get:
+      summary: Get all active mailing lists with paging
+      description: Retrieves a list of all the active email lists in your Sitecore Send account with paging information.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: Page
+          in: path
+          required: true
+          schema:
+            type: number
+            description: The page that you want to get.
+        - name: PageSize
+          in: path
+          required: true
+          schema:
+            type: number
+            description: The number of email lists per page.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: ShortBy
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ShortByEnum'
+        - name: SortMethod
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/SortMethod'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MailingListsResponse'
+  /lists/create.{Format}:
+    post:
+      summary: Create a mailing list
+      description: Creates a new empty email list in your account.
+      tags:
+        - Mailing Lists
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMailingListRequest'
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMailingListResponse'
+  /lists/{MailingListID}/update.{Format}:
+    post:
+      summary: Update a mailing list
+      description: Updates the properties of an existing email list in your account.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list to be updated.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMailingListRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateMailingListResponse'
+  /lists/{MailingListID}/delete.{Format}:
+    delete:
+      summary: Delete a mailing list
+      description: Deletes an email list from your Sitecore Send account.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list to be deleted.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteMailingListResponse'
+  /lists/{MailingListID}/customfields/create.{Format}:
+    post:
+      summary: Create a custom field
+      description: Creates a new custom field in a specific email list.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list where the custom field is created.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMailingListRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCustomFieldResponse'
+  /lists/{MailingListID}/customfields/{CustomFieldID}/update.{Format}:
+    post:
+      summary: Update a custom field
+      description: Updates the properties of a custom field in a specific email list.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list containing the custom field.
+        - name: CustomFieldID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the custom field to be updated.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCustomFieldRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCustomFieldResponse'
+  /lists/{MailingListID}/customfields/{CustomFieldID}/delete.{Format}:
+    delete:
+      summary: Remove a custom field
+      description: Removes a custom field from a specific email list.
+      tags:
+        - Mailing Lists
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list containing the custom field.
+        - name: CustomFieldID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the custom field to be deleted.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCustomFieldResponse'
+
+# Subscribers
+  /lists/{MailingListID}/subscribers.{Format}:
+    get:
+      summary: Get all subscribers
+      description: Retrieves a list of subscribers in a specific email list.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list containing the subscribers.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Page
+          in: query
+          required: false
+          schema:
+            type: number
+          description: The page of subscriber statistics results to return.
+        - name: PageSize
+          in: query
+          required: false
+          schema:
+            type: number
+          description: The page size of subscriber statistics results to return.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscribersResponse'
+  /lists/{MailingListID}/subscribers/{Status}.{Format}:
+    get:
+      summary: Get all subscribers by status
+      description: Retrieves a list of subscribers in a specific email list.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list containing the subscribers.
+        - name: Status
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/SubscriberStatusEnum'
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Page
+          in: query
+          required: false
+          schema:
+            type: number
+          description: The page of subscriber statistics results to return.
+        - name: PageSize
+          in: query
+          required: false
+          schema:
+            type: number
+          description: The page size of subscriber statistics results to return.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscribersResponse'
+  /subscribers/{MailingListID}/view.{Format}:
+    get:
+      summary: Get subscriber by email address
+      description: Retrieves details about a subscriber by email address in a specific email list.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list containing the subscriber.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+        - name: Email
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The email address of the subscriber.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriberResponse'
+  /subscribers/{MailingListID}/find/{SubscriberID}.{Format}:
+    get:
+      summary: Get subscriber by ID
+      description: Retrieves details about a subscriber by ID in a specific email list.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list containing the subscriber.
+        - name: SubscriberID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the subscriber.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscriberResponse'
+  /subscribers/{MailingListID}/subscribe.{Format}:
+    post:
+      summary: Add a new subscriber
+      description: Adds a new subscriber to a specific email list in your Sitecore Send account.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list where you want to add a new subscriber.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddSubscriberRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddSubscriberResponse'
+  /subscribers/{MailingListID}/subscribe_many.{Format}:
+    post:
+      summary: Add multiple subscribers
+      description: >
+        Adds multiple subscribers to a specific email list in your Sitecore Send account in a single request.
+        Our API supports requests with up to 1000 records per batch.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list where you want to add multiple subscribers.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMultipleSubscribersRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddMultipleSubscribersResponse'
+  /subscribers/{MailingListID}/update/{SubscriberID}.{Format}:
+    post:
+      summary: Update a subscriber
+      description: >
+        Updates the details of a subscriber in a specific email list in your Sitecore Send account.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list that contains the subscriber.
+        - name: SubscriberID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the subscriber that you want to update.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubscriberRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateSubscriberResponse'
+  /subscribers/unsubscribe.{Format}:
+    post:
+      summary: Unsubscribe a subscriber from all email lists
+      description: >
+        Unsubscribes a specific subscriber from all email lists they belong to in your Sitecore Send account.
+      tags:
+        - Subscribers
+      parameters:
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnsubscribeSubscriberRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsubscribeSubscriberResponse'
+  /subscribers/{MailingListID}/unsubscribe.{Format}:
+    post:
+      summary: Unsubscribe a subscriber from a mailing list
+      description: >
+        Unsubscribes a subscriber from a specific email list in your Sitecore Send account.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list from which you want to unsubscribe a subscriber.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnsubscribeSubscriberRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsubscribeSubscriberResponse'
+  /subscribers/{MailingListID}/{CampaignID}/unsubscribe.{Format}:
+    post:
+      summary: Unsubscribe a subscriber from a mailing list and a campaign
+      description: >
+        Unsubscribes a subscriber from a specific email list and campaign. This call considers the Unsubscribe settings in your Sitecore Send account where you can specify whether to remove a subscriber from all other email lists.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list from which you want to unsubscribe a subscriber.
+        - name: CampaignID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the campaign sent to the specific email list.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnsubscribeSubscriberRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsubscribeSubscriberResponse'
+  /subscribers/{MailingListID}/remove.{Format}:
+    post:
+      summary: Remove a subscriber from an email list
+      description: >
+        Removes a subscriber from a specific email list permanently without moving the subscriber to the suppression list. The status of the subscriber is Archived.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list that contains the subscriber you want to remove.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveSubscriberRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveSubscriberResponse'
+  /subscribers/{MailingListID}/remove_many.{Format}:
+    post:
+      summary: Remove multiple subscribers from an email list
+      description: >
+        Removes multiple subscribers from a specific email list permanently without moving the subscribers to the suppression list. The status of each removed subscriber is Archived. Any invalid email addresses specified in the list are ignored.
+      tags:
+        - Subscribers
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the email list that contains the subscribers you want to remove.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveMultipleSubscribersRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoveMultipleSubscribersResponse'
+
+# Segments
+  /lists/{MailingListID}/segments.{Format}:
+    get:
+      summary: Get all segments
+      description: Retrieves a list of all segments including their criteria for a specific email list in your Sitecore Send account.
+      tags:
+        - Segments
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list that contains the segments.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentListResponse'
+  /lists/{MailingListID}/segments/{SegmentID}/details.{Format}:
+    get:
+      summary: Get segment details
+      description: Retrieves the details about a specific segment in a specific email list in your account, including the segment criteria but not the subscribers included in the segment.
+      tags:
+        - Segments
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list that contains the segment.
+        - name: SegmentID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the segment that contains the details you are requesting.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SegmentDetailsResponse'
+  /lists/{MailingListID}/segments/{SegmentID}/members.{Format}:
+    get:
+      summary: Get segment subscribers
+      description: Retrieves a list of subscribers that match the criteria of a specific segment.
+      tags:
+        - Segments
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list that contains the segment.
+        - name: SegmentID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the segment that contains the subscribers you are requesting.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetSubscribersResponse'
+  /lists/{MailingListID}/segments/create.{Format}:
+    post:
+      summary: Create a segment
+      description: Creates a new segment with criteria in a specific email list.
+      tags:
+        - Segments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SegmentWithCriteriaRequest'
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list where the segment is created.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSegmentResponse'
+  /lists/{MailingListID}/segments/{SegmentID}/update.{Format}:
+    post:
+      summary: Update a segment
+      description: Updates the properties and criteria of an existing segment. You can update the segment's name and match type. If criteria are included in the segment, you can update the criteria but the existing name and settings are retained.
+      tags:
+        - Segments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SegmentWithCriteriaRequest'
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list where the segment is created.
+        - name: SegmentID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the segment that contains the subscribers you are requesting.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NullBaseResponse'
+  /lists/{MailingListID}/segments/{SegmentID}/criteria/add.{Format}:
+    post:
+      summary: Add criteria to a segment
+      description: Adds a criterion or rule to a specific segment in your email list.
+      tags:
+        - Segments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCriteriaRequest'
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list where the segment is created.
+        - name: SegmentID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the segment that contains the subscribers you are requesting.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCriteriaResponse'
+  /lists/{MailingListID}/segments/{SegmentID}/criteria/{CriteriaID}/update.{Format}:
+    post:
+      summary: Update segment criteria
+      description: Updates an existing criterion or rule in a specific segment in your email list.
+      tags:
+        - Segments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCriteriaRequest'
+      parameters:
+        - name: MailingListID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the email list where the segment is created.
+        - name: SegmentID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the segment that contains the subscribers you are requesting.
+        - name: CriteriaID
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the criteria of a segment to be updated.
+        - name: Format
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/Format'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateSegmentResponse'
+
+
+
+components:
+  securitySchemes:
+    ApiKeyAuth: 
+      type: apiKey
+      in: query
+      name: apiKey
+  schemas:
+# Common
+    Format:
+      type: string
+      enum: [json, xml]
+    SortMethod:
+      type: string
+      enum: [ASC, DESC]
+    Paging:
+      type: object
+      description: An object containing paging information.
+      properties:
+        PageSize:
+          type: integer
+          description: The page size of the results. This is 0 if not defined.
+        CurrentPage:
+          type: integer
+          description: The number of the result page. This is 1 if not defined.
+        TotalResults:
+          type: integer
+          description: The number of campaigns that are included in the response.
+        TotalPageCount:
+          type: integer
+          description: The number of all the available campaign pages for your account.
+        SortExpression:
+          type: string
+          nullable: true
+          description: The sort expression associated with the column or columns being sorted.
+        SortIsAscending:
+          type: boolean
+          description: Whether the results are displayed in ascending order based on the sort expression.
+    BaseResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: >
+            The response error message. This is null if successful.
+          example: null
+    NullBaseResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: object
+          description: This is null if successful.
+          example: null
+
+# Campaigns
+    Campaign:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: The ID of the campaign.
+        Name:
+          type: string
+          description: The name of the campaign.
+        Subject:
+          type: string
+          description: The subject of the campaign.
+        SiteName:
+          type: string
+          description: The site name of the account.
+        ConfirmationTo:
+          type: string
+          description: The email address to which a confirmation message is sent when the campaign has been successfully sent.
+        CreatedOn:
+          type: string
+          description: The date-time the requested campaign was created.
+        ABHoursToTest:
+          type: string
+          nullable: true
+          description: Specifies the total number of hours to test versions A and B of your campaign before sending the winning version.
+        ABCampaignType:
+          $ref: '#/components/schemas/ABCampaignType'
+        ABWinner:
+          type: string
+          nullable: true
+          description: Specifies if the winning campaign is A or B.
+        ABWinnerSelectionType:
+          $ref: '#/components/schemas/ABWinnerSelectionType'
+        Status:
+          type: integer
+          description: The status of the campaign.
+        DeliveredOn:
+          type: string
+          description: The date-time the campaign was delivered.
+        ScheduledFor:
+          type: string
+          nullable: true
+          description: The date-time the campaign is scheduled to be delivered.
+        ScheduledForTimezone:
+          type: string
+          description: The selected time zone for the scheduled campaign to be delivered.
+        MailingLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignFullMailingList'
+    CampaignFullMailingList:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: The ID of the email list.
+        Name:
+          type: string
+          description: The name of the email list.
+        ActiveMemberCount:
+          type: integer
+          description: The number of active members in the email list.
+        BouncedMemberCount:
+          type: integer
+          description: The number of bounced emails in the email list.
+        RemovedMemberCount:
+          type: integer
+          description: The number of removed emails in the email list.
+        UnsubscribedMemberCount:
+          type: integer
+          description: The number of unsubscribed emails in the email list.
+        Status:
+          type: integer
+          description: The status of the email list.
+        CreatedBy:
+          type: string
+          description: The IP address used to create the email list.
+        CreatedOn:
+          type: string
+          description: The date-time the email list was created.
+        UpdatedBy:
+          type: string
+          description: The IP address used to update the email list.
+        UpdatedOn:
+          type: string
+          description: The date-time the email list was updated.
+        ImportOperation:
+          type: object
+          description: An object that contains the details of the latest import operation performed in the email list.
+    CampaignsSortBy:
+      type: string
+      enum: [Name, Subject, Status, DeliveredOn, CreatedOn]
+    CampaignDetailsResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/CampaignDetailsContext'
+    CampaignDetailsContext:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: The ID of the campaign.
+        Name:
+          type: string
+          description: The name of the campaign.
+        Subject:
+          type: string
+          description: The subject of the campaign.
+        WebLocation:
+          type: string
+          nullable: true
+          description: The web location of the HTML campaign.
+        HTMLContent:
+          type: string
+          description: The HTML content of the campaign.
+        PlainContent:
+          type: string
+          description: The content of the campaign in plain text.
+        Sender:
+          $ref: '#/components/schemas/SenderDetails'
+        DeliveredOn:
+          type: string
+          description: The date-time the campaign was delivered.
+        ReplyToEmail:
+          $ref: '#/components/schemas/ReplyToEmailDetails'
+        CreatedOn:
+          type: string
+          description: The date-time the campaign was created.
+        UpdatedOn:
+          type: string
+          description: The date-time the campaign was updated.
+        ScheduledFor:
+          type: string
+          nullable: true
+          description: The date-time the campaign is scheduled to be delivered.
+        Timezone:
+          type: string
+          description: The selected time zone for the account.
+        FormatType:
+          $ref: '#/components/schemas/CampaignFormatType'
+        ABCampaignData:
+          $ref: '#/components/schemas/ABCampaignData'
+        MailingLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/MailingListReference'
+        ConfirmationTo:
+          type: string
+          description: The email address to which a confirmation message is sent when the campaign has been successfully sent.
+        Status:
+          type: integer
+          description: The status of the campaign.
+        IsTransactional:
+          type: boolean
+          description: Specifies whether the campaign was created using SMTP.
+    SenderDetails:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: The ID of the sender.
+        Name:
+          type: string
+          description: The name of the sender.
+        Email:
+          type: string
+          description: The email address of the sender.
+        CreatedOn:
+          type: string
+          description: The date that the sender was created.
+        IsEnabled:
+          type: boolean
+          description: Specifies if the sender is enabled.
+        SpfVerified:
+          type: boolean
+          description: Specifies if the SPF record for the sender is enabled.
+        DkimVerified:
+          type: boolean
+          description: Specifies if the DKIM record for the sender is enabled.
+        DkimPublic:
+          type: string
+          description: Specifies the sender's email public DKIM.
+    ReplyToEmailDetails:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: The ID of the Reply to email receiver.
+        Name:
+          type: string
+          description: The name of the Reply to email receiver.
+        Email:
+          type: string
+          description: The email address of the Reply to email receiver.
+        CreatedOn:
+          type: string
+          description: The date that the Reply to email receiver was created.
+        IsEnabled:
+          type: boolean
+          description: Specifies if the Reply to email receiver is enabled.
+        SpfVerified:
+          type: boolean
+          description: Specifies if the SPF record for the Reply to email receiver is enabled.
+        DkimVerified:
+          type: boolean
+          description: Specifies if the DKIM record for the Reply to email receiver is enabled.
+        DkimPublic:
+          type: string
+          description: Specifies the Reply to email receiver's email public DKIM.
+    ABCampaignData:
+      type: object
+      properties:
+        ID:
+          type: integer
+          description: The four-digit integer ID of the ABCampaignData.
+        SubjectB:
+          type: string
+          description: The subject line for campaign B.
+        PlainContentB:
+          type: string
+          description: The plain text content for campaign B.
+        HTMLContentB:
+          type: string
+          description: The HTML content for campaign B.
+        WebLocationB:
+          type: string
+          description: The web location for campaign B.
+        SenderB:
+          $ref: '#/components/schemas/SenderDetails'
+        HoursToTest:
+          type: integer
+          description: The total number of hours to test campaigns A and B of your split test before sending the winning version.
+        ListPercentage:
+          type: integer
+          description: Specifies the size of your test group in your list.
+        ABCampaignType:
+          $ref: '#/components/schemas/ABCampaignType'
+        ABWinnerSelectionType:
+          $ref: '#/components/schemas/ABWinnerSelectionType'
+        DeliveredOnA:
+          type: string
+          nullable: true
+          description: The date-time campaign A was delivered.
+        DeliveredOnB:
+          type: string
+          nullable: true
+          description: The date-time campaign B was delivered.
+    MailingListReference:
+      type: object
+      properties:
+        MailingListID:
+          type: string
+          description: The ID of the email list.
+        SegmentID:
+          type: integer
+          description: The ID of the selected segment. This is 0 if there is no segment selected.
+    ABCampaignType:
+      type: integer
+      enum: [0, 1, 2]
+      description: >
+        Specifies the type of A/B split campaign.
+        - 0: Sender
+        - 1: Content
+        - 2: Subject line
+    ABWinnerSelectionType:
+      type: integer
+      enum: [0, 1]
+      description: >
+        Specifies the method to determine the winning version for the test.
+        - 0: Unique opens test
+        - 1: Unique clicks test
+    CampaignFormatType:
+      type: integer
+      enum: [0, 1, 2]
+      description: >
+        The format type of the campaign.
+        - 0: HTML
+        - 1: Template
+        - 2: Plain Text
+    CreateDraftCampaignRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the campaign.
+        Subject:
+          type: string
+          description: The subject line of the campaign.
+        SenderEmail:
+          type: string
+          description: The email address of the campaign sender.
+        ReplyToEmail:
+          type: string
+          description: The email address selected to receive replies from the campaign.
+        ConfirmationToEmail:
+          type: string
+          description: The email address used to send a confirmation message when the campaign has been successfully sent.
+        HTMLContent:
+          type: string
+          description: The complete HTML body of the campaign.
+        WebLocation:
+          type: string
+          description: The URL used to retrieve the HTML content of the campaign.
+        MailingLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/MailingListReference'
+        IsAB:
+          type: boolean
+          description: A flag that defines if a campaign is an A/B split campaign.
+        ABCampaignType:
+          $ref: '#/components/schemas/ABCampaignType'
+        WebLocationB:
+          type: string
+          description: The web location of the second HTML content version.
+        HoursToTest:
+          type: integer
+          description: Specify how long the test runs, before determining the winning campaign version to be sent to the rest of the recipients.
+        ListPercentage:
+          type: integer
+          description: Specifies a portion of the target recipients to get the test campaign versions.
+        ABWinnerSelectionType:
+          $ref: '#/components/schemas/ABWinnerSelectionType'
+    CreateDraftCampaignResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          description: The ID of the campaign created.
+    CloneCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/CampaignDetailsResponse'
+    DeleteCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/NullBaseResponse'
+    UpdateCampaignRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the campaign.
+        Subject:
+          type: string
+          description: The subject line of the campaign.
+        SenderEmail:
+          type: string
+          description: The email address of the campaign sender.
+        ReplyToEmail:
+          type: string
+          description: The email address selected to receive replies from the campaign. This must be one of your campaign senders. If not specified, the SenderEmail is assumed.
+        ConfirmationToEmail:
+          type: string
+          description: The email address used to send a confirmation message when the campaign has been successfully sent. This can be any valid email address. If not specified, the SenderEmail is assumed.
+        WebLocation:
+          type: string
+          description: The URL used to retrieve the HTML content of the campaign. Sitecore Send automatically moves all CSS inline.
+        MailingLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignFullMailingList'
+        IsAB:
+          type: boolean
+          description: A flag that defines if a campaign is an A/B split campaign. If true, you must fill out A/B split campaign parameters.
+        ABCampaignType:
+          $ref: '#/components/schemas/ABCampaignType'
+        WebLocationB:
+          type: string
+          description: If testing A/B split campaigns with two HTML content versions, this is the web location of the second HTML content version.
+        HoursToTest:
+          type: integer
+          description: Specify how long the test runs, before determining the winning campaign version to be sent to the rest of the recipients.
+        ListPercentage:
+          type: integer
+          description: Specifies a portion of the target recipients to get the test campaign versions.
+        ABWinnerSelectionType:
+          $ref: '#/components/schemas/ABWinnerSelectionType'
+      required:
+        - Name
+    UpdateCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/NullBaseResponse'
+    TestCampaignRequest:
+      type: object
+      properties:
+        TestEmails:
+          type: array
+          description: A list of email addresses that you want to use to send your test campaign. Use a comma (,) to separate up to a maximum of five email addresses.
+          items:
+            type: string
+          example: ["email1@email.com", "email2@email.com"]
+    TestCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/NullBaseResponse'
+    SendCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/NullBaseResponse'
+    ScheduleCampaignRequest:
+      type: object
+      properties:
+        DateTime:
+          type: string
+          description: The specific date and time the campaign is scheduled to be delivered.
+          example: "24-06-2023 13:17"
+        Timezone:
+          $ref: '#/components/schemas/TimezoneEnum'
+    TimezoneEnum:
+      type: string
+      enum:
+        - Dateline Standard Time
+        - Samoa Standard Time
+        - Hawaiian Standard Time
+        - Alaskan Standard Time
+        - Pacific Standard Time
+        - Pacific Standard Time (Mexico)
+        - US Mountain Standard Time
+        - Mountain Standard Time
+        - Central Standard Time
+        - Central Standard Time (Mexico)
+        - Canada Central Standard Time
+        - SA Pacific Standard Time
+        - US Eastern Standard Time
+        - Eastern Standard Time
+        - Venezuela Standard Time
+        - Atlantic Standard Time
+        - SA Western Standard Time
+        - Central Brazilian Standard Time
+        - Pacific SA Standard Time
+        - Newfoundland Standard Time
+        - E. South America Standard Time
+        - Argentina Standard Time
+        - SA Eastern Standard Time
+        - Greenland Standard Time
+        - Montevideo Standard Time
+        - Mid-Atlantic Standard Time
+        - Azores Standard Time
+        - Cape Verde Standard Time
+        - Greenwich Standard Time
+        - GMT Standard Time
+        - Morocco Standard Time
+        - W. Central Africa Standard Time
+        - Central European Standard Time
+        - Romance Standard Time
+        - W. Europe Standard Time
+        - Namibia Standard Time
+        - E. Europe Standard Time
+        - Israel Standard Time
+        - FLE Standard Time
+        - South Africa Standard Time
+        - Egypt Standard Time
+        - Middle East Standard Time
+        - GTB Standard Time
+        - Jordan Standard Time
+        - Iran Standard Time
+        - Georgian Standard Time
+        - E. Africa Standard Time
+        - Russian Standard Time
+        - Arab Standard Time
+        - Arabic Standard Time
+        - Caucasus Standard Time
+        - Mauritius Standard Time
+        - Azerbaijan Standard Time
+        - Arabian Standard Time
+        - Afghanistan Standard Time
+        - West Asia Standard Time
+        - Pakistan Standard Time
+        - Ekaterinburg Standard Time
+        - Sri Lanka Standard Time
+        - India Standard Time
+        - Nepal Standard Time
+        - N. Central Asia Standard Time
+        - Central Asia Standard Time
+        - Myanmar Standard Time
+        - North Asia Standard Time
+        - SE Asia Standard Time
+        - Taipei Standard Time
+        - W. Australia Standard Time
+        - Singapore Standard Time
+        - North Asia East Standard Time
+        - China Standard Time
+        - Yakutsk Standard Time
+        - Korea Standard Time
+        - Tokyo Standard Time
+        - AUS Central Standard Time
+        - Cen. Australia Standard Time
+        - AUS Eastern Standard Time
+        - West Pacific Standard Time
+        - Tasmania Standard Time
+        - Vladivostok Standard Time
+        - Central Pacific Standard Time
+        - New Zealand Standard Time
+        - Tonga Standard Time
+    ScheduleCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/NullBaseResponse'
+    UnscheduleCampaignResponse:
+      allOf:
+        - $ref: '#/components/schemas/NullBaseResponse'
+    CampaignStatisticsType:
+      type: string
+      description: The type of activity used to get information and display statistics.
+      enum: [Sent, Opened, LinkClicked, Forward, Unsubscribed, Bounced, Complained, Activity]
+    CampaignAnalyticsItem:
+      type: object
+      properties:
+        Context:
+          type: string
+          description: The email address of the recipient.
+        ContextName:
+          type: string
+          description: The name of the recipient.
+        TotalCount:
+          type: integer
+          description: The total number of statistics based on the activity Type made by the recipient.
+        UniqueCount:
+          type: integer
+          description: The total number of unique statistics based on the activity Type made by the recipient.
+        ContextDescription:
+          type: string
+          description: If the selected Type is Unsubscribed, this contains the date-time the recipient unsubscribed from the campaign.
+    CampaignStatsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: object
+          description: An object containing all the Paging and Analytics information for the campaign.
+          properties:
+            Paging:
+              $ref: '#/components/schemas/Paging'
+            Analytics:
+              type: array
+              items:
+                $ref: '#/components/schemas/CampaignAnalyticsItem'
+    CampaignSummary:
+      type: object
+      description: Contains all the information for the campaign summary.
+      properties:
+        CampaignID:
+          type: string
+          description: The ID of the campaign.
+        ABVersion:
+          type: string
+          description: If the campaign is an A/B split test campaign, this displays which campaign version was sent. This is null for a regular campaign.
+        CampaignName:
+          type: string
+          description: The name of the campaign.
+        CampaignSubject:
+          type: string
+          description: The subject line of the campaign.
+        MailingLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/MailingListReference'
+        CampaignDeliveredOn:
+          type: string
+          description: The date-time the campaign was delivered.
+        To:
+          type: string
+          description: The date-time the measurement ended.
+        From:
+          type: string
+          description: The date-time the measurement started.
+        TotalOpens:
+          type: integer
+          description: The total number of email opens.
+        UniqueOpens:
+          type: integer
+          description: The total number of unique email opens.
+        TotalBounces:
+          type: integer
+          description: The total number of email bounces.
+        TotalComplaints:
+          type: integer
+          description: The total number of complaints.
+        TotalForwards:
+          type: integer
+          description: The total number of email forwards for the campaign using the Forward to a friend personalization tag.
+        UniqueForwards:
+          type: integer
+          description: The total number of unique forwards for the campaign using the Forward to a friend personalization tag.
+        TotalUnsubscribes:
+          type: integer
+          description: The total number of unsubscribed recipients for the campaign.
+        TotalLinkClicks:
+          type: integer
+          description: The total number of link clicks.
+        UniqueLinkClicks:
+          type: integer
+          description: The total number of unique link clicks.
+        Sent:
+          type: integer
+          description: The total number of campaign emails sent.
+        CampaignIsArchived:
+          type: boolean
+          description: Specifies whether the campaign has been archived.
+    CampaignSummaryResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          $ref: '#/components/schemas/CampaignSummary'
+    ABCampaignSummaryResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: object
+          description: Contains all the information for the A/B split test campaign
+          properties:
+            CampaignID:
+              type: string
+              description: The ID of the winning campaign version.
+            A:
+              $ref: '#/components/schemas/CampaignSummary'
+            B:
+              $ref: '#/components/schemas/CampaignSummary'
+# Senders
+    GetAllSendersResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code for this call. This is 0 if successful.
+        Error:
+          type: string
+          description: The response error message. This is null if successful.
+        Context:
+          type: array
+          items:
+            $ref: '#/components/schemas/SenderDetails'
+    GetSenderDetailsResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/SenderDetails'
+
+# Mailing Lists
+    ShortByEnum:
+      type: string
+      enum: [Name, Subject, Status, DeliveredOn, CreatedOn]
+    MailingList:
+      type: object
+      properties:
+        ID:
+          type: string
+        Name:
+          type: string
+        ActiveMemberCount:
+          type: integer
+        BouncedMemberCount:
+          type: integer
+        RemovedMemberCount:
+          type: integer
+        UnsubscribedMemberCount:
+          type: integer
+        Status:
+          $ref: '#/components/schemas/MailingListStatusEnum'
+        CustomFieldsDefinition:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinition'
+        CreatedBy:
+          type: string
+        CreatedOn:
+          type: string
+        UpdatedBy:
+          type: string
+        UpdatedOn:
+          type: string
+        ImportOperation:
+          $ref: '#/components/schemas/ImportOperation'
+    CustomFieldDefinition:
+      type: object
+      properties:
+        ID:
+          type: string
+        Name:
+          type: string
+        Context:
+          type: string
+          nullable: true
+        IsRequired:
+          type: boolean
+        Type:
+          $ref: '#/components/schemas/CustomFieldTypeEnumInteger'
+    ImportOperation:
+      type: object
+      properties:
+        ID:
+          type: integer
+        DataHash:
+          type: string
+        Mappings:
+          type: string
+        EmailNotify:
+          type: string
+          nullable: true
+        CreatedOn:
+          type: string
+        StartedOn:
+          type: string
+        CompletedOn:
+          type: string
+        TotalInserted:
+          type: integer
+        TotalUpdated:
+          type: integer
+        TotalUnsubscribed:
+          type: integer
+        TotalInvalid:
+          type: integer
+        TotalIgnored:
+          type: integer
+        TotalDuplicate:
+          type: integer
+        TotalMembers:
+          type: integer
+        Message:
+          type: string
+          nullable: true
+        Success:
+          type: boolean
+    CustomFieldTypeEnumInteger:
+      type: integer
+      enum: [0, 1, 2, 3, 5]
+      description: |
+        The data type of the custom field.
+        Possible values:
+          - 0: Represents text data type.
+          - 1: Represents number data type.
+          - 2: Represents date and time data type.
+          - 3: Represents single selection dropdown data type.
+          - 5: Represents checkbox data type.
+    MailingListStatusEnum:
+      type: integer
+      enum: [0, 1, 2, 3]
+      description: |
+        The status of the email list.
+        - 0: Created
+        - 1: Imported
+        - 2: Importing
+        - 3: Deleted
+    MailingListDetailsResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/MailingListDetailsContext'
+    MailingListDetailsContext:
+      type: object
+      properties:
+        ID:
+          type: string
+        Name:
+          type: string
+        ActiveMemberCount:
+          type: integer
+        BouncedMemberCount:
+          type: integer
+        RemovedMemberCount:
+          type: integer
+        UnsubscribedMemberCount:
+          type: integer
+        Status:
+          $ref: '#/components/schemas/MailingListStatusEnum'
+        CustomFieldsDefinition:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomFieldDefinition'
+        CreatedBy:
+          type: string
+        CreatedOn:
+          type: string
+        UpdatedBy:
+          type: string
+        UpdatedOn:
+          type: string
+        ImportOperation:
+          $ref: '#/components/schemas/ImportOperation'
+    MailingListsResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/MailingListsContext'
+    MailingListsContext:
+      type: object
+      properties:
+        Paging:
+          $ref: '#/components/schemas/Paging'
+        MailingLists:
+          type: array
+          items:
+            $ref: '#/components/schemas/MailingList'
+    CreateMailingListRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the email list.
+        ConfirmationPage:
+          type: string
+          nullable: true
+          description: The URL of the page displayed at the end of the subscription process.
+        RedirectAfterUnsubscribePage:
+          type: string
+          nullable: true
+          description: The URL of the redirect page when users unsubscribe from your email list.
+    CreateMailingListResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          description: The ID of the email list created.
+    UpdateMailingListRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the email list.
+        ConfirmationPage:
+          type: string
+          nullable: true
+          description: The URL of the page displayed at the end of the subscription process.
+        RedirectAfterUnsubscribePage:
+          type: string
+          nullable: true
+          description: The URL of the redirect page when users unsubscribe from your email list.
+    UpdateMailingListResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          description: The ID of the updated email list.
+    DeleteMailingListResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          nullable: true
+          description: This is null if successful.
+    CreateCustomFieldResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          nullable: true
+          description: The ID of the custom field created.
+    CreateCustomFieldRequest:
+      type: object
+      required:
+        - Name
+      properties:
+        Name:
+          type: string
+          description: The name of the custom field.
+        CustomFieldType:
+          $ref: '#/components/schemas/CustomFieldTypeEnum'
+        Options:
+          type: string
+          description: If creating a SingleSelectDropdown custom field, specify the available options.
+        IsRequired:
+          type: boolean
+          description: Specifies whether the custom field is mandatory or not.
+          default: false
+        IsHidden:
+          type: boolean
+          description: Specifies whether the custom field is visible to subscribers.
+          default: false
+    UpdateCustomFieldResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          nullable: true
+          description: This is null if successful.
+    UpdateCustomFieldRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the custom field.
+        CustomFieldType:
+          $ref: '#/components/schemas/CustomFieldTypeEnum'
+        Options:
+          type: string
+          description: If updating a SingleSelectDropdown custom field, specify the available options.
+        IsRequired:
+          type: boolean
+          description: Specifies whether the custom field is mandatory or not.
+        IsHidden:
+          type: boolean
+          description: Specifies whether the custom field is visible to subscribers.
+    CustomFieldTypeEnum:
+      type: string
+      enum: [Text, Number, DateTime, SingleSelectDropdown, CheckBox]
+      description: Specifies the data type of the custom field.
+    DeleteCustomFieldResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          type: string
+          nullable: true
+          description: This is null if successful.
+
+# Subscribers
+    GetSubscribersResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/SubscribersContext'
+    SubscribersContext:
+      type: object
+      properties:
+        Paging:
+          $ref: '#/components/schemas/Paging'
+        Subscribers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriber'
+    Subscriber:
+      type: object
+      properties:
+        ID:
+          type: string
+          description: The ID of the subscriber.
+        Name:
+          type: string
+          description: The name of the subscriber.
+        Email:
+          type: string
+          description: The email address of the subscriber.
+        CreatedOn:
+          type: string
+          description: The date-time the subscriber was added to the email list.
+        UnsubscribedOn:
+          type: string
+          nullable: true
+          description: The date-time the subscriber was unsubscribed from the email list.
+        UnsubscribedFromID:
+          type: string
+          nullable: true
+          description: The ID that the subscriber is unsubscribed from.
+        SubscribeType:
+          $ref: '#/components/schemas/SubscribeType'
+        SubscribeMethod:
+          $ref: '#/components/schemas/SubscribeMethod'
+        CustomFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriberCustomField'
+        RemovedOn:
+          type: string
+          nullable: true
+          description: The date-time the subscriber was removed from the email list.
+        Tags:
+          type: array
+          items:
+            type: string
+          description: The tags of the subscriber.
+    SubscriberCustomField:
+      type: object
+      properties:
+        CustomFieldID:
+          type: string
+          description: The ID of the custom field.
+        Name:
+          type: string
+          description: The name of the custom field.
+        Value:
+          type: string
+          description: The value of the custom field.
+    SubscriberStatusEnum:
+      type: string
+      enum: [Subscribed, Unsubscribed, Bounced, Removed]
+      description: Specifies the type of subscriber statistics results to return.
+    GetSubscriberResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/Subscriber'
+    SubscribeType:
+      type: integer
+      enum: [1, 2, 3, 4]
+      description: >
+        The status of the subscriber.
+        - 1: Subscribed
+        - 2: Unsubscribed
+        - 3: Bounced
+        - 4: Removed
+    SubscribeMethod:
+      type: integer
+      enum: [0, 1, 2]
+      description: >
+        The method used to subscribe the member to the email list.
+        - 0: Subscription form
+        - 1: File import
+        - 2: Manually added
+    AddSubscriberRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the new subscriber.
+        Email:
+          type: string
+          format: email
+          description: The email address of the new subscriber.
+        HasExternalDoubleOptIn:
+          type: boolean
+          description: >
+            When true, it flags the added subscriber as having given subscription consent by other means.
+        CustomFields:
+          $ref: '#/components/schemas/CustomFieldsArray'
+        Tags:
+          type: array
+          items:
+            type: string
+          description: The member tag you can use to filter members by when working with an email list.
+          example: []
+    AddSubscriberResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          nullable: true
+          description: The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/Subscriber'
+    AddMultipleSubscribersRequest:
+      type: object
+      properties:
+        HasExternalDoubleOptIn:
+          type: boolean
+          description: >
+            When true, it flags the added subscribers as having given their subscription consent by other means.
+        Subscribers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddSubscriberRequest'
+          description: >
+            A list containing up to 1000 subscribers that you are adding to the email list.
+            You must specify the Name, Email, and CustomFields for each subscriber.
+    AddMultipleSubscribersResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Errors:
+          type: string
+          description: >
+            The response error message that shows how many and which emails are invalid.
+            It is null if all emails are valid.
+        Context:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscriber'
+          description: >
+            An array containing information for each new subscriber added to the email list.
+    UpdateSubscriberRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the subscriber.
+        Email:
+          type: string
+          format: email
+          description: The email address of the subscriber.
+        HasExternalDoubleOptIn:
+          type: boolean
+          description: >
+            When true, it flags the added subscriber as having given subscription consent by other means.
+        CustomFields:
+          $ref: '#/components/schemas/CustomFieldsArray'
+    UpdateSubscriberResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: >
+            The response error message. This is null if successful.
+        Context:
+          $ref: '#/components/schemas/Subscriber'
+    CustomFieldsArray:
+      items:
+        type: string
+      description: >
+            A list of name-value pairs that match the subscriber’s custom fields defined in the email list.
+            For example, if you have two custom fields for Age and Country, you must specify the values for these two fields.
+      example: ["Age=18", "Country=USA"]
+    UnsubscribeSubscriberRequest:
+      type: object
+      properties:
+        Email:
+          type: string
+          format: email
+          description: The email address of the subscriber to unsubscribe.
+    UnsubscribeSubscriberResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: >
+            The response error message. This is null if successful.
+        Context:
+          type: object
+          description: This is null if successful.
+    RemoveSubscriberRequest:
+      type: object
+      properties:
+        Email:
+          type: string
+          format: email
+          description: The email address of the subscriber to remove.
+    RemoveSubscriberResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: >
+            The response error message. This is null if successful.
+        Context:
+          type: object
+          description: This is null if successful.
+    RemoveMultipleSubscribersRequest:
+      type: object
+      properties:
+        Emails:
+          type: string
+          description: >
+            A comma-separated list of subscriber email addresses that you want to remove from the email list.
+          example: "someEmail@email.com,someEmail2@email.com,someEmail3@email.com"
+    RemoveMultipleSubscribersResponse:
+      type: object
+      properties:
+        Code:
+          type: integer
+          description: The response code. This is 0 if successful.
+        Error:
+          type: string
+          description: >
+            The response error message. This is null if successful.
+        Context:
+          type: object
+          properties:
+            EmailsIgnored:
+              type: integer
+              description: The number of ignored email addresses.
+            EmailsProcessed:
+              type: integer
+              description: The number of processed email addresses.
+
+# Segments
+    SegmentListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: object
+          properties:
+            Paging:
+              $ref: '#/components/schemas/Paging'
+            Segments:
+              type: array
+              items:
+                $ref: '#/components/schemas/Segment'
+    Segment:
+      type: object
+      properties:
+        ID:
+          type: integer
+          description: The ID of the segment.
+        Name:
+          type: string
+          description: The name of the segment.
+        MatchType:
+          $ref: '#/components/schemas/MatchTypeEnum'
+        Criteria:
+          type: array
+          description: Details of the selected criteria for the segment.
+          items:
+            $ref: '#/components/schemas/SegmentCriteria'
+        CreatedBy:
+          type: string
+          description: The IP address used to create the segment.
+        CreatedOn:
+          type: string
+          description: The date-time the segment was created.
+        UpdatedBy:
+          type: string
+          description: The IP address used to update the segment.
+        UpdatedOn:
+          type: string
+          description: The date-time the segment was updated.
+        FetchType:
+          $ref: '#/components/schemas/FetchTypeEnum'
+        FetchValue:
+          type: integer
+          description: The value used to apply the FetchType filter.
+        Description:
+          type: string
+          description: A string representation of all the selected filters, MatchType, and FetchType criteria.
+    SegmentCriteria:
+      type: object
+      properties:
+        ID:
+          type: integer
+          description: The ID of the criteria.
+        SegmentID:
+          type: integer
+          description: The ID of the segment.
+        Field:
+          type: integer
+          description: The enum value of the selected filter.
+        CustomFieldID:
+          type: string
+          description: The ID of the custom field if the selected filter is a custom field.
+        Comparer:
+          $ref: '#/components/schemas/ComparerEnum'
+        Value:
+          type: string
+          description: The search term used to filter the specified Field.
+        DateFrom:
+          type: string
+          description: The starting date-time value selected to filter the results.
+        DateTo:
+          type: string
+          description: The ending date-time value selected to filter the results.
+        Properties:
+          type: object
+          example: null
+        Subscriteria:
+          type: object
+          example: null
+    MatchTypeEnum:
+      type: integer
+      enum:
+        - 0
+        - 1
+      description: >
+        Specifies how subscribers are returned by your segment based on the matching criteria.
+        - 0: All. Returns subscribers that match all the given criteria.
+        - 1: Any. Returns subscribers that match any of the given criteria.
+    MatchType:
+      type: string
+      enum:
+        - All
+        - Any
+      description: >
+        Specifies how subscribers are returned by your segment based on matching criteria.
+        - All (Default): Returns subscribers that match all the given criteria.
+        - Any: Returns subscribers that match any of the given criteria.
+    FetchTypeEnum:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+      description: >
+        Specifies the selected fetch type for the selected segment criteria.
+        - 0: All segment criteria.
+        - 1: Top segment criteria.
+        - 2: Top percent segment criteria.
+    FetchType:
+      type: string
+      enum:
+        - All
+        - Top
+        - TopPercent
+      description: >
+        Specifies how many criteria-matching subscribers are contained in your segment.
+        - All: Returns all criteria matching subscribers.
+        - Top: Returns only a maximum number of subscribers defined in FetchValue.
+        - TopPercent: Returns only a percentage of subscribers defined in FetchValue.
+
+    ComparerEnum:
+      type: integer
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 24
+        - 25
+      description: >
+        The operator that defines how to compare Field and Value. If not specified, Is is assumed.
+        - 0: Is. Finds subscribers where the Field is exactly equal to the specified Value.
+        - 1: IsNot. Finds subscribers where the Field is not equal to the specified Value.
+        - 2: Contains. Finds subscribers where the Field contains the specified Value.
+        - 3: DoesNotContain. Finds subscribers where the Field does not contain the specified Value.
+        - 4: StartsWith. Finds subscribers where the Field starts with the specified Value.
+        - 5: DoesNotStartWith. Finds subscribers where the Field does not start with the specified Value.
+        - 6: EndsWith. Finds subscribers where the Field ends with the specified Value.
+        - 7: DoesNotEndWith. Finds subscribers where the Field does not end with the specified Value.
+        - 8: IsGreaterThan. Finds subscribers where the Field is greater than the specified Value.
+        - 9: IsGreaterThanOrEqualTo. Finds subscribers where the Field is greater than or equal to the specified Value.
+        - 10: IsLessThan. Finds subscribers where the Field is less than the specified Value.
+        - 11: IsLessThanOrEqualTo. Finds subscribers where the Field is less than or equal to the specified Value.
+        - 12: IsBefore. Finds subscribers where the Field is before the specified Value.
+        - 13: IsAfter. Finds subscribers where the Field is after the specified Value.
+        - 14: IsEmpty. Finds subscribers where the Field has no Value.
+        - 15: IsNotEmpty. Finds subscribers where the Field contains a Value.
+        - 16: IsTrue. Finds subscribers where the condition defined by the Field is true.
+        - 17: IsFalse. Finds subscribers where the condition defined by the Field is false.
+        - 24: IsBetween. Finds subscribers where the numeric value of a criterion is between two defined numbers.
+        - 25: IsNotBetween. Finds subscribers where the numeric value of a criterion is not between two defined numbers.
+    SegmentDetailsResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          $ref: '#/components/schemas/Segment'
+    CreateSegmentRequest:
+      type: object
+      properties:
+        Name:
+          type: string
+          description: The name of the segment.
+        MatchType:
+          $ref: '#/components/schemas/MatchType'
+        FetchType:
+          $ref: '#/components/schemas/FetchType'
+        FetchValue:
+          type: integer
+          description: Specifies the maximum number for FetchType:Top or percentage for FetchType:TopPercent of members to be contained in the created segment. If not specified, 0 is assumed.
+
+    CreateSegmentResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: integer
+          description: The ID of the segment created.
+    UpdateSegmentResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: integer
+          description: The ID of the segment created.
+    CreateCriteriaResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+      type: object
+      properties:
+        Context:
+          type: integer
+          description: the ID of the new criteria added.
+    SegmentWithCriteriaRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateSegmentRequest'
+      type: object
+      properties:
+        Criteria:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateCriteriaRequest'
+    CreateCriteriaRequest:
+      type: object
+      required:
+        - Field
+        - Comparer
+      properties:
+        Field:
+          $ref: '#/components/schemas/FieldEnumString'
+        CustomFieldID:
+          type: string
+          description: The ID of the custom field if the selected filter is a custom field.
+        Comparer:
+          $ref: '#/components/schemas/ComparerEnumString'
+        Value:
+          type: string
+          description: The search term used to filter the specified Field.
+        LastXMinutes:
+          type: integer
+          description: Constrains the results by the time that has elapsed.
+        DateFrom:
+          type: string
+          format: date-time
+          description: The starting date-time value selected to filter the results.
+        DateTo:
+          type: string
+          format: date-time
+          description: The ending date-time value selected to filter the results.
+        DateFunction:
+          $ref: '#/components/schemas/DateFunctionEnum'
+    ComparerEnumString:
+      type: string
+      enum:
+        - Is
+        - IsNot
+        - Contains
+        - DoesNotContain
+        - StartsWith
+        - DoesNotStartWith
+        - EndsWith
+        - DoesNotEndWith
+        - IsGreaterThan
+        - IsGreaterThanOrEqualTo
+        - IsLessThan
+        - IsLessThanOrEqualTo
+        - IsBefore
+        - IsAfter
+        - IsEmpty
+        - IsNotEmpty
+        - IsTrue
+        - IsFalse
+      description: >
+        Select one of the following Comparer operators to compare a criterion field with its value:
+        - Is: Finds subscribers where the Field is exactly equal to the specified Value.
+        - IsNot: Finds subscribers where the Field is not equal to the specified Value.
+        - Contains: Finds subscribers where the Field contains the specified Value.
+        - DoesNotContain: Finds subscribers where the Field does not contain the specified Value.
+        - StartsWith: Finds subscribers where the Field starts with the specified Value.
+        - DoesNotStartWith: Finds subscribers where the Field does not start with the specified Value.
+        - EndsWith: Finds subscribers where the Field ends with the specified Value.
+        - DoesNotEndWith: Finds subscribers where the Field does not end with the specified Value.
+        - IsGreaterThan: Finds subscribers where the Field is greater than the specified Value.
+        - IsGreaterThanOrEqualTo: Finds subscribers where the Field is greater than or equal to the specified Value.
+        - IsLessThan: Finds subscribers where the Field is less than the specified Value.
+        - IsLessThanOrEqualTo: Finds subscribers where the Field is less than or equal to the specified Value.
+        - IsBefore: Finds subscribers where the Field is before the specified Value.
+        - IsAfter: Finds subscribers where the Field is after the specified Value.
+        - IsEmpty: Finds subscribers where the Field has no Value.
+        - IsNotEmpty: Finds subscribers where the Field contains a Value.
+        - IsTrue: Finds subscribers where the condition defined by the Field is true.
+        - IsFalse: Finds subscribers where the condition defined by the Field is false.
+    FieldEnumString:
+      type: string
+      enum:
+        - DateAdded
+        - DateUpdated
+        - RecipientName
+        - RecipientEmail
+        - SubscribeMethod
+        - CustomField
+        - MailingList
+        - CampaignsOpened
+        - LinksClicked
+        - CampaignName
+        - LinkURL
+        - CampaignSent
+        - Platform
+        - OperatingSystems
+        - EmailClient
+        - WebBrowser
+        - MobileBrowser
+        - AddedAnythingToCart
+        - ViewedProduct
+        - PurchasedProduct
+      description: >
+        Select one of the following Field values to filter the email list:
+        - DateAdded: Filters subscribers by the date they were added to the email list.
+        - DateUpdated: Filters subscribers by the date they were last updated in the email list.
+        - RecipientName: Filters subscribers by name.
+        - RecipientEmail: Filters subscribers by their email address.
+        - SubscribeMethod: Filters subscribers by their subscription method.
+        - CustomField: Filters subscribers by the value of a custom field.
+        - MailingList: Filters subscribers by the email list they belong to.
+        - CampaignsOpened: Filters subscribers by the number of campaigns they have opened within the past 60 days.
+        - LinksClicked: Filters subscribers by the number of links they have clicked from the campaigns sent to them within the past 60 days.
+        - CampaignName: Filters subscribers by the name of the campaign they have opened.
+        - LinkURL: Filters subscribers by the URL of the link they have clicked.
+        - CampaignSent: Filters subscribers by the campaign they have received or not received.
+        - Platform: Filters subscribers by the platform they use.
+        - OperatingSystems: Filters subscribers by the operating system they use.
+        - EmailClient: Filters subscribers by the email client they use.
+        - WebBrowser: Filters subscribers by the web browser they use.
+        - MobileBrowser: Filters subscribers by the mobile browser they use.
+        - AddedAnythingToCart: Filters subscribers by their cart history in a tracked website.
+        - ViewedProduct: Filters subscribers by their browsing history in a tracked website.
+        - PurchasedProduct: Filters subscribers by their purchase history in a tracked website.
+    DateFunctionEnum:
+      type: string
+      enum:
+        - Year
+        - Month
+        - Day
+        - WeekDay
+        - DaysPassed
+        - HoursPassed
+        - MinutesPassed
+      description: >
+        Select one of the following to use with fields of DateTime data type:
+        - Year: The four-digit year part of the date.
+        - Month: The month part of the date from 1 to 12.
+        - Day: The day part of the date from 1 to 31.
+        - WeekDay: The day of the week from 1 to 7. For example, 1 for Sunday, 2 for Monday, and so on.
+        - DaysPassed: The number of days that have passed until now.
+        - HoursPassed: The number of hours that have passed until now.
+        - MinutesPassed: The number of minutes that have passed until now.

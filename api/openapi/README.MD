@@ -1,0 +1,1 @@
+# Sitecore Send Open API Speficiation

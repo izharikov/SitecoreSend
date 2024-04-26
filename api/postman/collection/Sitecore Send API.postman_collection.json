@@ -1,0 +1,2581 @@
+{
+	"info": {
+		"_postman_id": "0c23f844-0e0a-4a1f-a0e0-379b3f6ba9dd",
+		"name": "Sitecore Send API",
+		"description": "This Postman collection is based on previously generated (see [article](https://neilkillen.com/2021/12/16/creating-a-postman-collection-for-sitecore-send-moosend/) from Neil Killen for more details).\n\nFeatures:\n\n- `apiKey` should be configured on Environment level and is automatically used in all requests\n- internal variables, e.g. `CampaignID` or `mailingListId` - you can retrieve it once by id and then use in other get statistics / update requests\n    \n\nIt contains `Internal API` and `Public API` sections. See their description for more details.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1111284"
+	},
+	"item": [
+		{
+			"name": "Public API",
+			"item": [
+				{
+					"name": "lists",
+					"item": [
+						{
+							"name": "Mailing List",
+							"item": [
+								{
+									"name": "customfields",
+									"item": [
+										{
+											"name": "Custom Field ID",
+											"item": [
+												{
+													"name": "Updating a custom field",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"Name\": \"City\",\n    \"CustomFieldType\": \"SingleSelectDropdown\",\n    \"Options\": \"Frankfurt,London,Paris,Rome\"\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/lists/:MailingListID/customfields/:CustomFieldID/update.{{Format}}?apikey={{apiKey}}",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":MailingListID",
+																"customfields",
+																":CustomFieldID",
+																"update.{{Format}}"
+															],
+															"query": [
+																{
+																	"key": "apikey",
+																	"value": "{{apiKey}}",
+																	"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																}
+															],
+															"variable": [
+																{
+																	"key": "MailingListID",
+																	"value": "{{mailingListId}}",
+																	"description": "(Required) \nThe ID of the mailing list where the custom field belongs.\n"
+																},
+																{
+																	"key": "CustomFieldID",
+																	"value": "",
+																	"description": "(Required) \nThe ID of the custom field to be updated.\n"
+																}
+															]
+														},
+														"description": "Updates the properties of an existing custom field in the specified mailing list."
+													},
+													"response": []
+												},
+												{
+													"name": "Removing a custom field",
+													"request": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:MailingListID/customfields/:CustomFieldID/delete.{{Format}}?apikey={{apiKey}}",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":MailingListID",
+																"customfields",
+																":CustomFieldID",
+																"delete.{{Format}}"
+															],
+															"query": [
+																{
+																	"key": "apikey",
+																	"value": "{{apiKey}}",
+																	"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																}
+															],
+															"variable": [
+																{
+																	"key": "MailingListID",
+																	"value": "{{mailingListId}}",
+																	"description": "(Required) \nThe ID of the mailing list where the custom field belongs.\n"
+																},
+																{
+																	"key": "CustomFieldID",
+																	"value": "",
+																	"description": "(Required) \nThe ID of the custom field to be deleted.\n"
+																}
+															]
+														},
+														"description": "Removes a custom field definition from the specified mailing list."
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "Creating a custom field",
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"Name\": \"Town\",\n    \"CustomFieldType\": \"SingleSelectDropdown\",\n    \"Options\": \"Athens,London,New York\"\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:MailingListID/customfields/create.{{Format}}?apikey={{apiKey}}",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":MailingListID",
+														"customfields",
+														"create.{{Format}}"
+													],
+													"query": [
+														{
+															"key": "apikey",
+															"value": "{{apiKey}}",
+															"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+														}
+													],
+													"variable": [
+														{
+															"key": "MailingListID",
+															"value": "{{mailingListId}}",
+															"description": "(Required) \nThe ID of the mailing list where the custom field will belong.\n"
+														}
+													]
+												},
+												"description": "Creates a new custom field in the specified mailing list."
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "segments",
+									"item": [
+										{
+											"name": "Segment ID",
+											"item": [
+												{
+													"name": "criteria",
+													"item": [
+														{
+															"name": "Adding criteria to segments",
+															"request": {
+																"method": "POST",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n    \"Field\": \"DateAdded\",\n    \"DateFunction\": \"Year\",\n    \"Comparer\": \"Is\",\n    \"Value\": \"2020\"\n}",
+																	"options": {
+																		"raw": {
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{baseUrl}}/lists/:MailingListID/segments/:SegmentID/criteria/add.{{Format}}?apikey={{apiKey}}",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"lists",
+																		":MailingListID",
+																		"segments",
+																		":SegmentID",
+																		"criteria",
+																		"add.{{Format}}"
+																	],
+																	"query": [
+																		{
+																			"key": "apikey",
+																			"value": "{{apiKey}}",
+																			"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "MailingListID",
+																			"value": "{{mailingListId}}",
+																			"description": "(Required) \nThe ID of the mailing list the specified segment belongs.\n"
+																		},
+																		{
+																			"key": "SegmentID",
+																			"value": "",
+																			"description": "(Required) \nThe ID of the segment to update.\n"
+																		}
+																	]
+																},
+																"description": "Adds a new criterion (a rule) to the specified segment."
+															},
+															"response": []
+														},
+														{
+															"name": "Updating segment criteria",
+															"request": {
+																"method": "POST",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n    \"Field\": \"LinkURL\",\n    \"Comparer\": \"is\",\n    \"Value\": \"https://www.moosend.com/\"\n}",
+																	"options": {
+																		"raw": {
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{baseUrl}}/lists/:MailingListID/segments/:SegmentID/criteria/:CriteriaID/update.{{Format}}?apikey={{mailingListId}}",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"lists",
+																		":MailingListID",
+																		"segments",
+																		":SegmentID",
+																		"criteria",
+																		":CriteriaID",
+																		"update.{{Format}}"
+																	],
+																	"query": [
+																		{
+																			"key": "apikey",
+																			"value": "{{mailingListId}}",
+																			"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																		}
+																	],
+																	"variable": [
+																		{
+																			"key": "MailingListID",
+																			"value": "{{mailingListId}}",
+																			"description": "(Required) \nThe ID of the mailing list the specified segment belongs.\n"
+																		},
+																		{
+																			"key": "SegmentID",
+																			"value": "",
+																			"description": "(Required) \nThe ID of the segment to update.\n"
+																		},
+																		{
+																			"key": "CriteriaID",
+																			"value": "",
+																			"description": "(Required) \nThe ID of the criterion to process.\n"
+																		}
+																	]
+																},
+																"description": "Updates an existing criterion in the specified segment."
+															},
+															"response": []
+														}
+													]
+												},
+												{
+													"name": "Getting segment details",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"var json = pm.response.json();\r",
+																	"pm.collectionVariables.set(\"segmentId\", json.Context);\r",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:MailingListID/segments/:SegmentID/details.{{Format}}?apikey={{apiKey}}",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":MailingListID",
+																"segments",
+																":SegmentID",
+																"details.{{Format}}"
+															],
+															"query": [
+																{
+																	"key": "apikey",
+																	"value": "{{apiKey}}",
+																	"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																}
+															],
+															"variable": [
+																{
+																	"key": "MailingListID",
+																	"value": "{{mailingListId}}",
+																	"description": "(Required) \nThe ID of the mailing list the specified segment belongs\n"
+																},
+																{
+																	"key": "SegmentID",
+																	"value": "{{segmentId}}",
+																	"description": "(Required) \nThe ID of the segment to fetch results for.\n"
+																}
+															]
+														},
+														"description": "Gets detailed information on a specific segment and its criteria. However, it does not include the subscribers returned by the segment."
+													},
+													"response": []
+												},
+												{
+													"name": "Getting segment subscribers",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:MailingListID/segments/:SegmentID/members.{{Format}}?apikey={{apiKey}}",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":MailingListID",
+																"segments",
+																":SegmentID",
+																"members.{{Format}}"
+															],
+															"query": [
+																{
+																	"key": "apikey",
+																	"value": "{{apiKey}}",
+																	"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																}
+															],
+															"variable": [
+																{
+																	"key": "MailingListID",
+																	"value": "{{mailingListId}}",
+																	"description": "(Required) \nThe ID of the mailing list the specified segment belongs\n"
+																},
+																{
+																	"key": "SegmentID",
+																	"value": "{{segmentId}}",
+																	"description": "(Required) \nThe ID of the segment to fetch results for.\n"
+																}
+															]
+														},
+														"description": "Gets a list of the subscribers that the specified segment returns according to its criteria. Because the results for this call could be quite big, paging information is required as input."
+													},
+													"response": []
+												},
+												{
+													"name": "Updating a segment",
+													"request": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n    \"Name\": \"Customer Tracking and Opener\",\n    \"MatchType\": \"Any\",\n    \"FetchType\": \"All\",\n    \"Criteria\": [\n        {\n            \"Field\": \"AddedAnythingToCart\",\n            \"Comparer\": \"IsTrue\",\n            \"Times\": 2,\n            \"ProductCode\": \"123\",\n            \"LastXMinutes\": 4320,\n            \"WebsiteId\": \"12345678-1234-abdc-efgh-1231bc456efg789hij\"\n        },\n        {\n            \"Field\": \"OpenedAnyCampaign\",\n            \"Comparer\": \"IsTrue\",\n            \"DateFrom\": \"2019-09-01\",\n            \"DateTo\": \"2020-12-01\"\n        }\n    ]\n}",
+															"options": {
+																"raw": {
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/lists/:MailingListID/segments/:SegmentID/update.{{Format}}?apikey={{apiKey}}",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":MailingListID",
+																"segments",
+																":SegmentID",
+																"update.{{Format}}"
+															],
+															"query": [
+																{
+																	"key": "apikey",
+																	"value": "{{apiKey}}",
+																	"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																}
+															],
+															"variable": [
+																{
+																	"key": "MailingListID",
+																	"value": "{{mailingListId}}",
+																	"description": "(Required) \nThe ID of the mailing list the specified segment belongs\n"
+																},
+																{
+																	"key": "SegmentID",
+																	"value": "{{segmentId}}"
+																}
+															]
+														},
+														"description": "Updates the properties and criteria of an existing segment. You may update the name and match type of the segment. If criteria are included these will also be updated. You may update only the criteria. In that case, the existing name and settings will be retained."
+													},
+													"response": []
+												},
+												{
+													"name": "Deleting A Segment",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"var json = pm.response.json();\r",
+																	"pm.collectionVariables.set(\"segmentId\", json.Context);\r",
+																	""
+																],
+																"type": "text/javascript",
+																"packages": {}
+															}
+														}
+													],
+													"request": {
+														"method": "DELETE",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/lists/:MailingListID/segments/:SegmentID/delete.{{Format}}?apikey={{apiKey}}",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"lists",
+																":MailingListID",
+																"segments",
+																":SegmentID",
+																"delete.{{Format}}"
+															],
+															"query": [
+																{
+																	"key": "apikey",
+																	"value": "{{apiKey}}",
+																	"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+																}
+															],
+															"variable": [
+																{
+																	"key": "MailingListID",
+																	"value": "{{mailingListId}}",
+																	"description": "(Required) \nThe ID of the mailing list the specified segment belongs.\n"
+																},
+																{
+																	"key": "SegmentID",
+																	"value": "{{segmentId}}",
+																	"description": "(Required) \nThe ID of the segment to update.\n"
+																}
+															]
+														},
+														"description": "Deletes a segment along with its criteria from the mailing list. The subscribers of the mailing list that the segment returned are not deleted or affected in any way."
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "Creating a new segment",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"var json = pm.response.json();\r",
+															"pm.collectionVariables.set(\"segmentId\", json.Context);\r",
+															""
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"Name\": \"Engaged and Verified\",\n    \"MatchType\": \"All\",\n    \"FetchType\": \"All\",\n    \"Criteria\": [\n        {\n            \"Field\": \"VerifiedForDoubleOptIn\",\n            \"Comparer\": \"IsTrue\"\n        },\n        {\n            \"Field\": \"LinksClicked\",\n            \"Comparer\": \"Is\",\n            \"Value\": \"2\",\n            \"LastXMinutes\": 43200\n        }\n    ]\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/lists/:MailingListID/segments/create.{{Format}}?apikey={{apiKey}}",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"lists",
+														":MailingListID",
+														"segments",
+														"create.{{Format}}"
+													],
+													"query": [
+														{
+															"key": "apikey",
+															"value": "{{apiKey}}",
+															"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+														}
+													],
+													"variable": [
+														{
+															"key": "MailingListID",
+															"value": "{{mailingListId}}",
+															"description": "(Required) \nThe ID of the mailing list the specified segment belongs\n"
+														}
+													]
+												},
+												"description": "Creates a new segment (with criteria) for the given mailing list. You may specify the name of the segment, the way the criteria will match together and the criteria that you wish to segment your list by."
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Getting mailing list details",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var json = pm.response.json();\r",
+													"pm.collectionVariables.set(\"mailingListId\", json.Context.ID);\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:MailingListID/details.{{Format}}?apiKey={{apiKey}}&WithStatistics=true",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":MailingListID",
+												"details.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apiKey",
+													"value": "{{apiKey}}"
+												},
+												{
+													"key": "WithStatistics",
+													"value": "true"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "2e899cba-8723-4547-b65d-40414d1b45d4",
+													"description": "(Required) \nThe ID of the mailing list to be returned.\n"
+												}
+											]
+										},
+										"description": "Gets details for a given mailing list. You may include subscriber statistics in your results or not. Any segments existing for the requested mailing list will not be included in the results."
+									},
+									"response": []
+								},
+								{
+									"name": "Updating a mailing list",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Name\": \"New List Name\",\n    \"ConfirmationPage\": \"www.someotherUrl.com\",\n    \"RedirectAfterUnsubscribePage\": \"www.someotherUrl.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/lists/:MailingListID/update.{{Format}}?apiKey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":MailingListID",
+												"update.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apiKey",
+													"value": "{{apiKey}}"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to be updated. \n"
+												}
+											]
+										},
+										"description": "Updates the properties of an existing mailing list."
+									},
+									"response": []
+								},
+								{
+									"name": "Deleting a mailing list",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:MailingListID/delete.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":MailingListID",
+												"delete.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to be deleted.\n"
+												}
+											]
+										},
+										"description": "Deletes a mailing list from your account."
+									},
+									"response": []
+								},
+								{
+									"name": "Getting subscribers",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:MailingListID/subscribers/{{Status}}.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":MailingListID",
+												"subscribers",
+												"{{Status}}.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list where the subscribers belong.\n"
+												}
+											]
+										},
+										"description": "Gets a list of all subscribers in a given mailing list. You may filter the list by setting a date to fetch those subscribed since then and/or by their status. Because the results for this call could be quite big, paging information is required as input."
+									},
+									"response": []
+								},
+								{
+									"name": "Getting segments",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/lists/:MailingListID/segments.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"lists",
+												":MailingListID",
+												"segments.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Get a list of all segments with their criteria for the given mailing list."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Getting all active mailing lists with paging",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/lists/:page/:pageSize.{{Format}}?apikey={{apiKey}}&ShortBy=CreatedOn&SortMethod=ASC",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists",
+										":page",
+										":pageSize.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										},
+										{
+											"key": "ShortBy",
+											"value": "CreatedOn",
+											"description": "\nThe name of the campaign property to sort results by. If not specified, results will be sorted by the CreatedOn property\n"
+										},
+										{
+											"key": "SortMethod",
+											"value": "ASC",
+											"description": "\nThe method to sort results: ASC for ascending, DESC for descending. If not specified, `ASC` will be assumed\n"
+										}
+									],
+									"variable": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "pageSize",
+											"value": "3"
+										}
+									]
+								},
+								"description": "Gets a list of your active mailing lists in your account. Because the results for this call could be quite big, paging information is required as input."
+							},
+							"response": []
+						},
+						{
+							"name": "Getting all active mailing lists with paging Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/lists/:page/:pageSize.{{Format}}?apikey={{apiKey}}&ShortBy=CreatedOn&SortMethod=ASC",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists",
+										":page",
+										":pageSize.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										},
+										{
+											"key": "ShortBy",
+											"value": "CreatedOn",
+											"description": "\nThe name of the campaign property to sort results by. If not specified, results will be sorted by the CreatedOn property\n"
+										},
+										{
+											"key": "SortMethod",
+											"value": "ASC",
+											"description": "\nThe method to sort results: ASC for ascending, DESC for descending. If not specified, `ASC` will be assumed\n"
+										}
+									],
+									"variable": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "pageSize",
+											"value": "3"
+										}
+									]
+								},
+								"description": "Gets a list of your active mailing lists in your account. Because the results for this call could be quite big, paging information is required as input."
+							},
+							"response": []
+						},
+						{
+							"name": "Getting all active mailing lists",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/lists.{{Format}}?apikey={{apiKey}}&ShortBy=Status&WithStatistics=true",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										},
+										{
+											"key": "ShortBy",
+											"value": "Status",
+											"description": "\nThe name of the campaign property to sort results by. If not specified, results will be sorted by the CreatedOn property\n"
+										},
+										{
+											"key": "SortMethod",
+											"value": "DESC",
+											"description": "\nThe method to sort results: ASC for ascending, DESC for descending. If not specified, `ASC` will be assumed\n",
+											"disabled": true
+										},
+										{
+											"key": "WithStatistics",
+											"value": "true"
+										}
+									]
+								},
+								"description": "Gets a list of your active mailing lists in your account. Because the results for this call could be quite big, paging information is required as input."
+							},
+							"response": []
+						},
+						{
+							"name": "Creating a mailing list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var json = pm.response.json();\r",
+											"pm.collectionVariables.set(\"mailingListId\", json.Context.ID);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Name\": \"New List\"\n    // \"ConfirmationPage\": \"www.someUrl.com\",\n    // \"RedirectAfterUnsubscribePage\": \"www.someUrl.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/lists/create.{{Format}}?apikey={{apiKey}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"lists",
+										"create.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										}
+									]
+								},
+								"description": "Creates a new empty mailing list in your account."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "subscribers",
+					"item": [
+						{
+							"name": "{Mailing List ID}",
+							"item": [
+								{
+									"name": "Get subscriber by email address",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var json = pm.response.json();\r",
+													"pm.collectionVariables.set(\"SubscriberID\", json.Context.ID);\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/view.{{Format}}?apikey={{apiKey}}&Email=sdk.testuser@gmail.com",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"view.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												},
+												{
+													"key": "Email",
+													"value": "sdk.testuser@gmail.com",
+													"description": "(Required) \nThe email of the subscriber.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list where the subscriber belongs.\n"
+												}
+											]
+										},
+										"description": "Searches for a subscriber with the specified email address in the specified mailing list and returns detailed information such as id, name, date created, date unsubscribed, status and custom fields"
+									},
+									"response": []
+								},
+								{
+									"name": "Get subscriber by id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var json = pm.response.json();\r",
+													"pm.collectionVariables.set(\"SubscriberID\", json.Context.ID);\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/find/:subscriberId.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"find",
+												":subscriberId.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to search the subscriber in. \n"
+												},
+												{
+													"key": "subscriberId",
+													"value": ""
+												}
+											]
+										},
+										"description": "Searches for a subscriber with the specified unique id in the specified mailing list and returns detailed information such as email, name, date created, date unsubscribed, status and custom fields."
+									},
+									"response": []
+								},
+								{
+									"name": "Adding subscribers",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Name\": \"Paul\",\n    \"Email\": \"user-001@gmail.com\",\n    \"HasExternalDoubleOptIn\": false,\n    \"CustomFields\": [\n        \"DateField=2024-12-31\",\n        \"Number=1\"\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/subscribe.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"subscribe.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to add the new member.\n"
+												}
+											]
+										},
+										"description": "Adds a new subscriber to the specified mailing list. If there is already a subscriber with the specified email address in the list, an update will be performed instead. The rate limit for this request is 10 requests per 10 seconds (*per API key)."
+									},
+									"response": []
+								},
+								{
+									"name": "Adding multiple subscribers",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"HasExternalDoubleOptIn\": false,\n    \"Subscribers\": [\n        {\n            \"Email\": \"user-001@gmail.com\",\n            \"CustomFields\": [\n                \"StringField=Field\"\n            ]\n        }\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/subscribe_many.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"subscribe_many.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to add subscribers to.        \n"
+												}
+											]
+										},
+										"description": "This method allows you to add multiple subscribers in a mailing list with a single call. If some subscribers already exist with the given email addresses, they will be updated. If you try to add a subscriber with an invalid email address, this attempt will be ignored, as the process will skip to the next subscriber automatically. The rate limit for this request is 2 requests per 10 seconds (*per API key)."
+									},
+									"response": []
+								},
+								{
+									"name": "Updating a subscriber",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Name\": \"Some Name\",\n    \"HasExternalDoubleOptIn\": false,\n    \"Email\": \"someEmail@email.com\",\n    \"CustomFields\": [\n        \"Age=25\",\n        \"Country=USA\"\n    ]\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/update/:subscriberId.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"update",
+												":subscriberId.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list that contains the subscriber\n"
+												},
+												{
+													"key": "subscriberId",
+													"value": "{{SubscriberID}}"
+												}
+											]
+										},
+										"description": "Updates a subscriber in the specified mailing list."
+									},
+									"response": []
+								},
+								{
+									"name": "Unsubscribing subscribers from mailing list",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Email\": \"user-001@gmail.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/unsubscribe.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"unsubscribe.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to add subscribers to.  \n"
+												}
+											]
+										},
+										"description": "Unsubscribes a subscriber from the specified mailing list. The rate limit for this request is 20 requests per 10 seconds (*per API key)."
+									},
+									"response": []
+								},
+								{
+									"name": "Unsubscribing subscribers from mailing list and a specified campaign",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Email\": \"test1@test.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/:CampaignID/unsubscribe.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												":CampaignID",
+												"unsubscribe.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to remove the subscriber from.  \n"
+												},
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the campaign that was sent to the specific mailing list.\n"
+												}
+											]
+										},
+										"description": "Unsubscribes a subscriber from the specified mailing list and the specified campaign. \nThis call will take into account the setting you have in \"unsubscribe settings\" and will remove the subscriber from all other mailing lists or not accordingly. The rate limit for this request is 20 requests per 10 seconds (*per API key)."
+									},
+									"response": []
+								},
+								{
+									"name": "Removing a subscriber",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Email\": \"test1@test.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/remove.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"remove.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to remove the subscriber from.  \n"
+												}
+											]
+										},
+										"description": "Removes a subscriber from the specified mailing list permanently (without moving to the suppression list)."
+									},
+									"response": []
+								},
+								{
+									"name": "Removing multiple subscribers",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Emails\": \"someEmail@email.com,someEmail2@email.com,someEmail3@email.com\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/subscribers/:MailingListID/remove_many.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"subscribers",
+												":MailingListID",
+												"remove_many.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "MailingListID",
+													"value": "{{mailingListId}}",
+													"description": "(Required) \nThe ID of the mailing list to remove the subscribers from.  \n"
+												}
+											]
+										},
+										"description": "Removes a list of subscribers from the specified mailing list permanently (without putting them in the suppression list). Any invalid email addresses specified will be ignored."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Unsubscribing subscribers from account",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Email\": \"test1@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/subscribers/unsubscribe.{{Format}}?apikey={{apiKey}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"subscribers",
+										"unsubscribe.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										}
+									]
+								},
+								"description": "Unsubscribes a subscriber from the account. The rate limit for this request is 20 requests per 10 seconds (*per API key)."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "campaigns",
+					"item": [
+						{
+							"name": "{Campaign ID}",
+							"item": [
+								{
+									"name": "stats",
+									"item": [
+										{
+											"name": "Get Campaign Statistics With Paging & Filtered",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/campaigns/:CampaignID/stats/{{Type}}.{{Format}}?apikey={{apiKey}}",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"campaigns",
+														":CampaignID",
+														"stats",
+														"{{Type}}.{{Format}}"
+													],
+													"query": [
+														{
+															"key": "apikey",
+															"value": "{{apiKey}}",
+															"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+														},
+														{
+															"key": "Page",
+															"value": "1",
+															"description": "\nThe page number to display results for. If not specified, the first page will be returned.\n",
+															"disabled": true
+														},
+														{
+															"key": "PageSize",
+															"value": "1",
+															"description": "\nThe maximum number of results per page. This must be a positive integer up to 100. If not specified, 50 results per page will be returned. \nIf a value greater than 100 is specified, it will be treated as 100.\n",
+															"disabled": true
+														},
+														{
+															"key": "From",
+															"value": "11-06-2016",
+															"description": "\nA date value that specifies since when to start returning results. If omitted, results will be returned from the moment the campaign was sent.\n",
+															"disabled": true
+														},
+														{
+															"key": "To",
+															"value": "16-06-2016",
+															"description": "\nA date value that specifies up to when to return results. If omitted, results will be returned up to date.\n",
+															"disabled": true
+														}
+													],
+													"variable": [
+														{
+															"key": "CampaignID",
+															"value": "{{CampaignID}}",
+															"description": "(Required) \nThe ID of the requested AB test campaign\n"
+														}
+													]
+												},
+												"description": "Returns a detailed list of statistics for a given campaign based on activity such as emails sent, opened, bounced, link clicked, etc. \nBecause the results for this call could be quite big, paging information is required as input."
+											},
+											"response": []
+										},
+										{
+											"name": "Activity By Location",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/campaigns/:CampaignID/stats/countries.{{Format}}?apikey={{apiKey}}",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"campaigns",
+														":CampaignID",
+														"stats",
+														"countries.{{Format}}"
+													],
+													"query": [
+														{
+															"key": "apikey",
+															"value": "{{apiKey}}",
+															"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+														}
+													],
+													"variable": [
+														{
+															"key": "CampaignID",
+															"value": "{{CampaignID}}",
+															"description": "(Required) \nThe ID of the requested campaign\n"
+														}
+													]
+												},
+												"description": "Returns a detailed report of your campaign opens (unique and total) by country."
+											},
+											"response": []
+										},
+										{
+											"name": "Link Activity",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/campaigns/:CampaignID/stats/links.{{Format}}?apikey={{apiKey}}",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"campaigns",
+														":CampaignID",
+														"stats",
+														"links.{{Format}}"
+													],
+													"query": [
+														{
+															"key": "apikey",
+															"value": "{{apiKey}}",
+															"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+														}
+													],
+													"variable": [
+														{
+															"key": "CampaignID",
+															"value": "{{CampaignID}}",
+															"description": "(Required) \nThe ID of the requested campaign\n"
+														}
+													]
+												},
+												"description": "Returns a list with your campaign links and how many clicks have been made by your recipients, either unique or total."
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "Getting Campaign Details",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var json = pm.response.json();\r",
+													"pm.collectionVariables.set(\"CampaignID\", json.Context.ID);\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/view.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"view.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "5ab1bff0-ae3d-4500-b165-ab08affcfbbc",
+													"description": "(Required) \nThe ID of the requested campaign\n"
+												}
+											]
+										},
+										"description": "Returns a complete set of properties that describe the requested campaign in detail. No statistics are included in the result."
+									},
+									"response": []
+								},
+								{
+									"name": "Get campaign activity by location",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/view.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"view.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the requested campaign\n"
+												}
+											]
+										},
+										"description": "Returns a complete set of properties that describe the requested campaign in detail. No statistics are included in the result."
+									},
+									"response": []
+								},
+								{
+									"name": "Cloning An Existing Campaign",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"var json = pm.response.json();\r",
+													"pm.collectionVariables.set(\"CampaignID\", json.Context.ID);\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/clone.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"clone.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) "
+												}
+											]
+										},
+										"description": "Creates an exact copy of an existing campaign. The new campaign is created as a draft."
+									},
+									"response": []
+								},
+								{
+									"name": "Updating A Draft Campaign",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"Name\": \"Test campaign\",\n    \"Subject\": \"Some subject\",\n    \"SenderEmail\": \"something@email.com\",\n    \"ReplyToEmail\": \"something@email.com\",\n    \"ConfirmationToEmail\": \"something@email.com\",\n    \"WebLocation\": \"http://www.mysite.gr/newsletter/index\",\n    \"MailingLists\": [\n        {\n            \"MailingListID\": \"adaf2fe1-55db-42dc-aaf8-56d8f502138d\",\n            \"SegmentID\": \"10166\"\n        },\n        {\n            \"MailingListID\": \"dce99b7a-2619-4805-aaeb-7fecdcb3c71b\"\n        }\n    ],\n    \"IsAB\": \"true\",\n    \"ABCampaignType\": \"Content\",\n    \"WebLocationB\": \"http://www.mysite.gr/newsletter/index\",\n    \"HoursToTest\": \"2\",\n    \"ListPercentage\": \"20\",\n    \"ABWinnerSelectionType\": \"OpenRate\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/update.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"update.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}"
+												}
+											]
+										},
+										"description": "Updates properties of an existing draft A/B campaign in your account. Non-draft campaigns cannot be updated.\nIgnore ***(A/B Split Campaign Option)*** if you want to create a regular campaign."
+									},
+									"response": []
+								},
+								{
+									"name": "Deleting A Campaign",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/delete.{{Format}}?apikey={{internalApiUrl}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"delete.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{internalApiUrl}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the draft campaign to update.\n"
+												}
+											]
+										},
+										"description": "Deletes a campaign from your account, draft or even sent."
+									},
+									"response": []
+								},
+								{
+									"name": "Testing a campaign",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/jason"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"TestEmails\": [\n        \"email1@email.com\",\n        \"email2@email.com\"\n    ]\n}"
+										},
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/send_test.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"send_test.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the draft campaign to be tested.\n"
+												}
+											]
+										},
+										"description": "Sends a test email of a draft campaign to a list of email addresses you specify for previewing."
+									},
+									"response": []
+								},
+								{
+									"name": "Sending a campaign",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/send.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"send.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the draft campaign to be sent.\n"
+												}
+											]
+										},
+										"description": "Sends an existing draft campaign to all recipients specified in its mailing list. The campaign is sent immediatelly."
+									},
+									"response": []
+								},
+								{
+									"name": "Campaign Summary",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/view_summary.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"view_summary.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the requested campaign\n"
+												}
+											]
+										},
+										"description": "Provides a basic summary of the results for any sent campaign such as the number of recipients, opens, clicks, bounces, unsubscribes, forwards etc. to date."
+									},
+									"response": []
+								},
+								{
+									"name": "Scheduling A Campaign",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"DateTime\": \"24-06-2016 13:17\",\n    \"Timezone\": \"US Eastern Standard Time\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/schedule.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"schedule.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the campaign to be scheduled\n"
+												}
+											]
+										},
+										"description": "Assigns a scheduled date and time at which the campaign will be delivered."
+									},
+									"response": []
+								},
+								{
+									"name": "Unscheduling a campaign",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/unschedule.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"unschedule.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the campaign to be scheduled\n"
+												}
+											]
+										},
+										"description": "Removes a previously defined scheduled date and time from a campaign, so that it will be delivered immediately if already queued or when sent."
+									},
+									"response": []
+								},
+								{
+									"name": "A/B Test Campaign Summary",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/campaigns/:CampaignID/view_ab_summary.{{Format}}?apikey={{apiKey}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"campaigns",
+												":CampaignID",
+												"view_ab_summary.{{Format}}"
+											],
+											"query": [
+												{
+													"key": "apikey",
+													"value": "{{apiKey}}",
+													"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+												}
+											],
+											"variable": [
+												{
+													"key": "CampaignID",
+													"value": "{{CampaignID}}",
+													"description": "(Required) \nThe ID of the requested AB test campaign\n"
+												}
+											]
+										},
+										"description": "Provides a basic summary of the results for a sent AB test campaign, separately for each version (A and B), such as the number of recipients, opens, clicks, bounces, unsubscribes, forwards etc to date."
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Campaigns By Page",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/campaigns/:page.{{Format}}?apikey={{apiKey}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"campaigns",
+										":page.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										}
+									],
+									"variable": [
+										{
+											"key": "page",
+											"value": "1"
+										}
+									]
+								},
+								"description": "Returns a list of all campaigns in your account with detailed information. Because the results for this call could be quite big, paging information is required as input."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Campaigns By Page And Pagesize",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/campaigns/:Page/{{PageSize}}.{{Format}}?apikey={{apiKey}}&ShortBy=CreatedOn&SortMethod=ASC",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"campaigns",
+										":Page",
+										"{{PageSize}}.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										},
+										{
+											"key": "ShortBy",
+											"value": "CreatedOn",
+											"description": "\nThe name of the campaign property to sort results by. If not specified, results will be sorted by the CreatedOn property\n"
+										},
+										{
+											"key": "SortMethod",
+											"value": "ASC",
+											"description": "\nThe method to sort results: ASC for ascending, DESC for descending. If not specified, `ASC` will be assumed\n"
+										}
+									],
+									"variable": [
+										{
+											"key": "Page",
+											"value": "1",
+											"description": "\nThe page number to display results for.\n"
+										}
+									]
+								},
+								"description": "Returns a list of all campaigns in your account with detailed information. Because the results for this call could be quite big, paging information is required as input."
+							},
+							"response": []
+						},
+						{
+							"name": "Creating A Draft Campaign",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var json = pm.response.json();\r",
+											"pm.collectionVariables.set(\"CampaignID\", json.Context.ID);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"Name\": \"Test campaign\",\n    \"Subject\": \"Some subject\",\n    \"SenderEmail\": \"something@email.com\",\n    \"ReplyToEmail\": \"something@email.com\",\n    \"ConfirmationToEmail\": \"something@email.com\",\n    \"WebLocation\": \"http://www.mysite.gr/newsletter/index\",\n    \"MailingLists\": [\n        {\n            \"MailingListID\": \"adaf2fe1-55db-42dc-aaf8-56d8f502138d\",\n            \"SegmentID\": \"10166\"\n        },\n        {\n            \"MailingListID\": \"dce99b7a-2619-4805-aaeb-7fecdcb3c71b\"\n        }\n    ],\n    \"IsAB\": \"true\",\n    \"ABCampaignType\": \"Content\",\n    \"WebLocationB\": \"http://www.mysite.gr/newsletter/index\",\n    \"HoursToTest\": \"2\",\n    \"ListPercentage\": \"20\",\n    \"ABWinnerSelectionType\": \"OpenRate\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/campaigns/create.{{Format}}?apikey={{apiKey}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"campaigns",
+										"create.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										}
+									]
+								},
+								"description": "Creates a new campaign in your account. This method does not send the campaign, but rather creates it as a draft, ready for sending or testing. \nYou can choose to send either a regular campaign or an AB split campaign. Campaign content must be specified from a web location. \nIgnore ***(A/B Split Campaign Option)*** if you want to create a regular campaign."
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Campaigns",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/campaigns.{{Format}}?apikey={{apiKey}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"campaigns.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										}
+									]
+								},
+								"description": "Returns a list of all campaigns in your account with detailed information. Because the results for this call could be quite big, paging information is required as input."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "senders",
+					"item": [
+						{
+							"name": "Getting All Your Senders",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/senders/find_all.{{Format}}?apikey={{apiKey}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"senders",
+										"find_all.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										}
+									]
+								},
+								"description": "Gets a list of your active senders in your account. You may specify any email address of these senders when sending a campaign."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Sender By Email",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/senders/find_one.{{Format}}?apikey={{apiKey}}&Email=",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"senders",
+										"find_one.{{Format}}"
+									],
+									"query": [
+										{
+											"key": "apikey",
+											"value": "{{apiKey}}",
+											"description": "(Required) \nYou may find your API Key or generate a new one in your account settings.\n"
+										},
+										{
+											"key": "Email",
+											"value": ""
+										}
+									]
+								},
+								"description": "Gets a list of your active senders in your account. You may specify any email address of these senders when sending a campaign."
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "This Postman collection is based on described and documented Sitecore Send API documentation: [https://doc.sitecore.com/send/en/developers/api-documentation/index-en.html](https://doc.sitecore.com/send/en/developers/api-documentation/index-en.html)\n\nThis can be easily used for testing/scripting purposes."
+		},
+		{
+			"name": "Internal API",
+			"item": [
+				{
+					"name": "Websites",
+					"item": [
+						{
+							"name": "Get All Websites",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{internalApiUrl}}/websites",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"websites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Website By Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{internalApiUrl}}/websites/:websiteId",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"websites",
+										":websiteId"
+									],
+									"variable": [
+										{
+											"key": "websiteId",
+											"value": "c59b2679-36a3-45da-a01a-337401f4131b"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add new website",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"domain\": \"https://somesite.com\"\r\n}"
+								},
+								"url": {
+									"raw": "{{internalApiUrl}}/websites",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"websites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete website",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/plain, */*",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{internalApiUrl}}/websites/:websiteId",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"websites",
+										":websiteId"
+									],
+									"variable": [
+										{
+											"key": "websiteId",
+											"value": "11e29e0e-17e9-4124-840a-a2c163415497"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Manage websites"
+				},
+				{
+					"name": "Automations",
+					"item": [
+						{
+							"name": "Get All Automations",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{internalApiUrl}}/automations",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"automations"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get automation by id",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{internalApiUrl}}/automations/:automationId",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"automations",
+										":automationId"
+									],
+									"variable": [
+										{
+											"key": "automationId",
+											"value": "d30917618e4b4d1a8aa57c26bb6f5494"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Senders",
+					"item": [
+						{
+							"name": "Get  Senders",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{internalApiUrl}}/user/senders/details",
+									"host": [
+										"{{internalApiUrl}}"
+									],
+									"path": [
+										"user",
+										"senders",
+										"details"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"description": "This collection is based on some undocumented Sitecore Send features, which can be performed from Sitecore Send (Moosend) admin website.\n\nUse those requests with caution and remember, Sitecore can change something there.",
+			"auth": {
+				"type": "apikey",
+				"apikey": [
+					{
+						"key": "value",
+						"value": "{{apiKey}}",
+						"type": "string"
+					},
+					{
+						"key": "key",
+						"value": "X-Apikey",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://api.sitecoresend.io/v3"
+		},
+		{
+			"key": "Format",
+			"value": "json"
+		},
+		{
+			"key": "PageSize",
+			"value": "10"
+		},
+		{
+			"key": "Status",
+			"value": "Unsubscribed"
+		},
+		{
+			"key": "SubscriberID",
+			"value": "deserunt do"
+		},
+		{
+			"key": "Page",
+			"value": "1"
+		},
+		{
+			"key": "Type",
+			"value": "Sent"
+		},
+		{
+			"key": "mailingListId",
+			"value": ""
+		},
+		{
+			"key": "fieldName",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "segmentId",
+			"value": "506718"
+		},
+		{
+			"key": "internalApiUrl",
+			"value": "https://gateway.services.moosend.com",
+			"type": "string"
+		},
+		{
+			"key": "CampaignID",
+			"value": ""
+		}
+	]
+}
