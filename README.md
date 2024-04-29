@@ -4,7 +4,7 @@ This repository contains API specifications and clients to use Sitecore Send.
 
 _Note_. This repository is unofficial private project and is not supported by Sitecore.
 
-## .NET
+## .NET (still WIP)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/izharikov/SitecoreSend/dotnet.yml)](https://github.com/izharikov/SitecoreSend/actions/workflows/dotnet.yml)
 
 [![NuGet Version](https://img.shields.io/nuget/v/SitecoreSend.SDK)](https://www.nuget.org/packages/SitecoreSend.SDK)
