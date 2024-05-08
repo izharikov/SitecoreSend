@@ -1,3 +1,4 @@
+using SitecoreSend.SDK.Tests.Http;
 using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests;
@@ -5,7 +6,7 @@ namespace SitecoreSend.SDK.Tests;
 public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
 {
 
-    private readonly IMailingListService _service = new MailingListService(TestsApp.ApiConfiguration, TestsApp.Client(testOutputHelper));
+    private readonly IMailingListService _service = new MailingListService(TestsApp.ApiConfiguration, CustomHttpFactory.Create(testOutputHelper));
 
     [Fact]
     public async Task MailingList_OnValidList_CreatesList()

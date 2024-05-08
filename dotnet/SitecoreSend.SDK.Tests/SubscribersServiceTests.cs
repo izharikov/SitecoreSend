@@ -1,10 +1,23 @@
-﻿using Xunit.Abstractions;
+﻿using SitecoreSend.SDK.Tests.Http;
+using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests;
 
 public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ISubscribersService _service = new SubscribersService(TestsApp.ApiConfiguration, TestsApp.Client(testOutputHelper));
+    // actual limits are lower, but to ensure it works I increased them
+    // https://doc.sitecore.com/send/en/developers/api-documentation/api-rate-limiting.html
+    private const int SecondsLimit = 12;
+    
+    private readonly ISubscribersService _service =
+        new SubscribersService(TestsApp.ApiConfiguration,
+            CustomHttpFactory.Create(testOutputHelper),
+            addSubscriberClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 7),
+            addMultipleSubscribersClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 2),
+            unsubscribeFromListClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 20),
+            unsubscribeFromListAndCampaignClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 20),
+            unsubscribeFromAccountClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 20)
+        );
 
     [Fact]
     public async Task Subscribers_OnTestSubscriber_ShouldFindSubscriberAndUpdate()
@@ -69,11 +82,11 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         });
         Assert.NotNull(response?.Data);
         Assert.Equal(email, response.Data.Email);
-            
+
         // remove subscriber
         var removeSingle = await _service.RemoveSubscriberFromList(listId, email);
         Assert.True(removeSingle?.Success);
-            
+
         subscribed = await _service.GetAllSubscribers(listId);
         Assert.NotNull(subscribed?.Data);
         Assert.DoesNotContain(email, subscribed.Data.Subscribers.Select(x => x.Email));
@@ -81,7 +94,7 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         unsubscribed = await _service.GetAllSubscribers(listId, SubscriberStatus.Unsubscribed);
         Assert.NotNull(unsubscribed?.Data);
         Assert.DoesNotContain(email, unsubscribed.Data.Subscribers.Select(x => x.Email));
-            
+
         var removed = await _service.GetAllSubscribers(listId, SubscriberStatus.Removed);
         Assert.NotNull(removed?.Data);
         Assert.Contains(email, removed.Data.Subscribers.Select(x => x.Email));
@@ -116,22 +129,25 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
 
         // remove all subscribers
         await Task.WhenAll(emails.Select(x => _service.UnsubscribeFromList(listId, x)));
-            
+
         subscribed = await _service.GetAllSubscribers(listId);
         Assert.NotNull(subscribed?.Data);
         subscribedEmails = subscribed.Data.Subscribers.Select(x => x.Email).ToHashSet();
         Assert.All(emails, x => Assert.DoesNotContain(x, subscribedEmails));
-            
+
         var unsubscribed = await _service.GetAllSubscribers(listId, SubscriberStatus.Unsubscribed);
         Assert.NotNull(unsubscribed?.Data);
         var unSubscribedEmails = unsubscribed.Data.Subscribers.Select(x => x.Email).ToHashSet();
         Assert.All(emails, x => Assert.Contains(x, unSubscribedEmails));
-            
+
         // subscribe again
-        await Task.WhenAll(emails.Select(async x => await _service.AddSubscriber(listId, new SubscriberRequest()
+        foreach (var email in emails)
         {
-            Email = x,
-        })));
+            await _service.AddSubscriber(listId, new SubscriberRequest()
+            {
+                Email = email,
+            });
+        }
         // addSubscribers = await _service.AddMultipleSubscribers(listId, new MultipleSubscribersRequest()
         // {
         //     Subscribers = emails.Select(x => new SubscriberRequest()
@@ -142,16 +158,16 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         //
         // Assert.NotNull(addSubscribers?.Data);
         // Assert.NotEmpty(addSubscribers.Data);
-            
+
         // remove subscribers
         var removeSubscribers = await _service.RemoveMultipleSubscribersFromList(listId, emails.ToArray());
         Assert.True(removeSubscribers?.Success);
-            
+
         subscribed = await _service.GetAllSubscribers(listId);
         Assert.NotNull(subscribed?.Data);
         subscribedEmails = subscribed.Data.Subscribers.Select(x => x.Email).ToHashSet();
         Assert.All(emails, x => Assert.DoesNotContain(x, subscribedEmails));
-            
+
         unsubscribed = await _service.GetAllSubscribers(listId, SubscriberStatus.Unsubscribed);
         Assert.NotNull(unsubscribed?.Data);
         unSubscribedEmails = unsubscribed.Data.Subscribers.Select(x => x.Email).ToHashSet();
@@ -170,7 +186,7 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         var emails = TestsApp.Configuration.GetSection("SitecoreSend:NewMultipleSubscribers").GetChildren()
             .Select(x => x.Value!).ToList();
         var email = emails[0];
-            
+
         var response = await _service.AddSubscriber(listId, new SubscriberRequest()
         {
             Email = email,
@@ -178,7 +194,7 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         });
         Assert.NotNull(response?.Data);
         Assert.Equal(email, response.Data.Email);
-            
+
         var result = await _service.UnsubscribeFromAllLists(emails[0]);
         Assert.True(result?.Success);
     }

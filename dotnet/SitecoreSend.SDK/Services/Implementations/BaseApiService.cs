@@ -18,11 +18,16 @@ public abstract class BaseApiService
         httpClient.BaseAddress = new Uri(apiConfiguration.BaseUri);
     }
 
-    protected BaseApiService(ApiConfiguration apiConfiguration) : this(apiConfiguration, new HttpClient()
+    protected BaseApiService(ApiConfiguration apiConfiguration) : this(apiConfiguration, CreateDefaultClient(apiConfiguration))
     {
-        BaseAddress = new Uri(apiConfiguration.BaseUri),
-    })
+    }
+
+    protected static HttpClient CreateDefaultClient(ApiConfiguration apiConfiguration)
     {
+        return new HttpClient()
+        {
+            BaseAddress = new Uri(apiConfiguration.BaseUri),
+        };
     }
 
     protected string Url(string baseUrl, params object?[] queryParams)
@@ -45,13 +50,24 @@ public abstract class BaseApiService
 
     protected async Task<T?> Get<T>(string url, CancellationToken? cancellationToken = null)
     {
-        return await _httpClient.GetFromJsonAsync<T>(url, cancellationToken ?? CancellationToken.None)
+        return await Get<T>(_httpClient, url, cancellationToken);
+    }
+
+    protected static async Task<T?> Get<T>(HttpClient client, string url, CancellationToken? cancellationToken = null)
+    {
+        return await client.GetFromJsonAsync<T>(url, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
     }
 
     protected async Task<T?> Delete<T>(string url, CancellationToken? cancellationToken = null)
     {
-        var response = await _httpClient.DeleteAsync(url, cancellationToken ?? CancellationToken.None)
+        return await Delete<T>(_httpClient, url, cancellationToken);
+    }
+
+    protected static async Task<T?> Delete<T>(HttpClient client, string url,
+        CancellationToken? cancellationToken = null)
+    {
+        var response = await client.DeleteAsync(url, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
         return await response.Content.ReadFromJsonAsync<T>().ConfigureAwait(false);
     }
@@ -59,7 +75,13 @@ public abstract class BaseApiService
     protected async Task<TResponse?> Post<TResponse>(string url, object body,
         CancellationToken? cancellationToken = null)
     {
-        var response = await _httpClient.PostAsJsonAsync(url, body, cancellationToken ?? CancellationToken.None)
+        return await Post<TResponse>(_httpClient, url, body, cancellationToken);
+    }
+
+    protected static async Task<TResponse?> Post<TResponse>(HttpClient client, string url, object body,
+        CancellationToken? cancellationToken = null)
+    {
+        var response = await client.PostAsJsonAsync(url, body, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
         return await response.Content.ReadFromJsonAsync<TResponse>().ConfigureAwait(false);
     }

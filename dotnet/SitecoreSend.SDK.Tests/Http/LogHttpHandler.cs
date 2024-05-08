@@ -8,11 +8,11 @@ public partial class LogHttpHandler : DelegatingHandler
     private readonly ITestOutputHelper testOutputHelper;
     private readonly bool _hideSecrets;
 
-    public LogHttpHandler(ITestOutputHelper testOutputHelper, bool hideSecrets = true)
+    public LogHttpHandler(ITestOutputHelper testOutputHelper, HttpMessageHandler handler, bool hideSecrets = true)
     {
         this.testOutputHelper = testOutputHelper;
         _hideSecrets = hideSecrets;
-        InnerHandler = new HttpClientHandler();
+        InnerHandler = handler;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,

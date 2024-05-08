@@ -1,11 +1,12 @@
-﻿using Xunit.Abstractions;
+﻿using SitecoreSend.SDK.Tests.Http;
+using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests;
 
 public class CampaignsServiceTest(ITestOutputHelper testOutputHelper)
 {
 
-    private readonly ICampaignService _service = new CampaignService(TestsApp.ApiConfiguration, TestsApp.Client(testOutputHelper));
+    private readonly ICampaignService _service = new CampaignService(TestsApp.ApiConfiguration, CustomHttpFactory.Create(testOutputHelper));
 
     [Fact]
     public async Task GetAllCampaigns_OnValidRequest_ShouldReturnAllCampaigns()
