@@ -7,7 +7,7 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
 {
     // actual limits are lower, but to ensure it works I increased them
     // https://doc.sitecore.com/send/en/developers/api-documentation/api-rate-limiting.html
-    private const int SecondsLimit = 12;
+    private const int SecondsLimit = 15;
     
     private readonly ISubscribersService _service =
         new SubscribersService(TestsApp.ApiConfiguration,
