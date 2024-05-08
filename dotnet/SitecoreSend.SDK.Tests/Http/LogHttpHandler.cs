@@ -6,10 +6,12 @@ namespace SitecoreSend.SDK.Tests.Http;
 public partial class LogHttpHandler : DelegatingHandler
 {
     private readonly ITestOutputHelper testOutputHelper;
+    private readonly bool _hideSecrets;
 
-    public LogHttpHandler(ITestOutputHelper testOutputHelper)
+    public LogHttpHandler(ITestOutputHelper testOutputHelper, bool hideSecrets = true)
     {
         this.testOutputHelper = testOutputHelper;
+        _hideSecrets = hideSecrets;
         InnerHandler = new HttpClientHandler();
     }
 
@@ -36,16 +38,21 @@ public partial class LogHttpHandler : DelegatingHandler
     private static readonly Regex GuidRegex = GeneratedGuidRegex();
     private static readonly Regex EmailRegex = GeneratedEmailRegex();
 
-    private static string HideSecrets(string input)
+    private string HideSecrets(string input)
     {
+        if (!_hideSecrets)
+        {
+            return input;
+        }
         var hidden = GuidRegex.Replace(input, "********-****-****-****-************");
-        hidden = EmailRegex.Replace(hidden, match => match.Groups[1] +"*****@***.***");
+        hidden = EmailRegex.Replace(hidden, match => match.Groups[1] + "*****@***.***");
         return hidden;
     }
 
     [GeneratedRegex(@"[a-fA-F\d]{8}-[a-fA-F\d]{4}-[a-fA-F\d]{4}-[a-fA-F\d]{4}-[a-fA-F\d]{12}")]
-    private static partial Regex GeneratedGuidRegex();    
-    
-    [GeneratedRegex(@"([\=""]{1})(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)")]
+    private static partial Regex GeneratedGuidRegex();
+
+    [GeneratedRegex(
+        @"([\=""]{1})(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)")]
     private static partial Regex GeneratedEmailRegex();
 }

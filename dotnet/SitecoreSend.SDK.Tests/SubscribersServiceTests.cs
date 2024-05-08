@@ -1,14 +1,10 @@
-﻿using SitecoreSend.SDK.Tests.Http;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests;
 
 public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly ISubscribersService _service = new SubscribersService(new ApiConfiguration()
-    {
-        ApiKey = TestsApp.Configuration.GetSection("SitecoreSend:ApiKey").Value ?? string.Empty,
-    }, new HttpClient(new LogHttpHandler(testOutputHelper)));
+    private readonly ISubscribersService _service = new SubscribersService(TestsApp.ApiConfiguration, TestsApp.Client(testOutputHelper));
 
     [Fact]
     public async Task Subscribers_OnTestSubscriber_ShouldFindSubscriberAndUpdate()
