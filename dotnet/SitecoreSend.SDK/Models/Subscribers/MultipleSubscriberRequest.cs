@@ -1,8 +1,7 @@
-﻿namespace SitecoreSend.SDK
+﻿namespace SitecoreSend.SDK;
+
+public class MultipleSubscribersRequest
 {
-    public class MultipleSubscribersRequest
-    {
-        public bool HasExternalDoubleOptIn { get; set; }
-        public IList<SubscriberRequest> Subscribers { get; set; } = [];
-    }
+    public bool HasExternalDoubleOptIn { get; set; }
+    public IList<SubscriberRequest> Subscribers { get; set; } = [];
 }

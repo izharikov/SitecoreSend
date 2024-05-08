@@ -1,40 +1,50 @@
-﻿namespace SitecoreSend.SDK.Tools
+﻿namespace SitecoreSend.SDK.Tools;
+
+public static class DateTimeTools
 {
-    internal static class DateTimeTools
+    public static bool IsDate(string? dateString)
     {
-        public static bool IsDate(string? dateString)
+        if (dateString == null || string.IsNullOrEmpty(dateString) || dateString.Length < 8)
         {
-            if (dateString == null || string.IsNullOrEmpty(dateString) || dateString.Length < 8)
-            {
-                return false;
-            }
-
-            return dateString.StartsWith("/Date(") && dateString.EndsWith(")/");
+            return false;
         }
-        
-        public static DateTimeOffset Parse(string? dateString)
-        {
-            if (!IsDate(dateString))
-            {
-                return default;
-            }
-            // Extracting the timestamp value
-            var timestampString = dateString!.Substring(6, dateString.Length - 8);
-        
-            // Converting the timestamp to a long
-            long timestamp;
-            if (long.TryParse(timestampString, out timestamp))
-            {
-                // Creating a DateTimeOffset from the timestamp
-                return DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
-            }
 
+        return dateString.StartsWith("/Date(") && dateString.EndsWith(")/");
+    }
+        
+    public static DateTimeOffset Parse(string? dateString)
+    {
+        if (!IsDate(dateString))
+        {
             return default;
         }
-
-        public static string ToString(DateTimeOffset date)
+        // Extracting the timestamp value
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+        var startIndex = dateString.IndexOf('(') + 1;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+        var endIndex = dateString.IndexOfAny(['+', ')']);
+        if (!long.TryParse(dateString.Substring(startIndex, endIndex - startIndex), out var ticks))
         {
-            return $"/Date({date.ToUnixTimeMilliseconds()})/";
+            return default;
         }
+        var dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(ticks);
+
+        // Extract the offset from the string, if present
+        TimeSpan offset = TimeSpan.Zero;
+        if (dateString[endIndex] == '+')
+        {
+            var offsetString = dateString.Substring(endIndex + 1, 4);
+            offset = TimeSpan.ParseExact(offsetString, "hhmm", null);
+        }
+
+        // Apply the offset to the DateTimeOffset
+        dateTimeOffset = new DateTimeOffset(dateTimeOffset.DateTime, offset);
+
+        return dateTimeOffset;
+    }
+
+    public static string ToString(DateTimeOffset date)
+    {
+        return $"/Date({date.ToUnixTimeMilliseconds()})/";
     }
 }

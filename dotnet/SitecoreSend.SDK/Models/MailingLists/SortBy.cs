@@ -1,11 +1,10 @@
-﻿namespace SitecoreSend.SDK
+﻿namespace SitecoreSend.SDK;
+
+public enum SortBy
 {
-    public enum SortBy
-    {
-        Name,
-        Subject,
-        Status,
-        DeliveredOn,
-        CreatedOn,
-    }
+    Name,
+    Subject,
+    Status,
+    DeliveredOn,
+    CreatedOn,
 }
