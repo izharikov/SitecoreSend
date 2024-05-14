@@ -2,12 +2,12 @@
 using System.Text.Json.Serialization;
 using SitecoreSend.SDK.Tools;
 
-namespace SitecoreSend.SDK.JsonConverters
+namespace SitecoreSend.SDK.JsonConverters;
+
+public class SubscriberCustomFieldConverter : JsonConverter<SubscriberCustomField>
 {
-    public class SubscriberCustomFieldConverter : JsonConverter<SubscriberCustomField>
+    public override SubscriberCustomField? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override SubscriberCustomField? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
             var elem = JsonSerializer.Deserialize<InternalSubscriberCustomField>(ref reader, options);
             if (elem == null)
             {
@@ -23,8 +23,8 @@ namespace SitecoreSend.SDK.JsonConverters
             };
         }
 
-        public override void Write(Utf8JsonWriter writer, SubscriberCustomField? field, JsonSerializerOptions options)
-        {
+    public override void Write(Utf8JsonWriter writer, SubscriberCustomField? field, JsonSerializerOptions options)
+    {
             var value = field?.Value?.ToString();
             if (field?.Value is DateTimeOffset date)
             {
@@ -33,8 +33,8 @@ namespace SitecoreSend.SDK.JsonConverters
             writer.WriteStringValue(field != null ? $"{field.Name}={value}" : string.Empty);
         }
 
-        private static object? ParseValue(JsonElement element, out bool isDate)
-        {
+    private static object? ParseValue(JsonElement element, out bool isDate)
+    {
             isDate = false;
             if (element.ValueKind == JsonValueKind.Number)
             {
@@ -53,5 +53,4 @@ namespace SitecoreSend.SDK.JsonConverters
 
             return rawValue;
         }
-    }
 }

@@ -1,21 +1,21 @@
-﻿namespace SitecoreSend.SDK
+﻿namespace SitecoreSend.SDK;
+
+public class SubscriberRequest
 {
-    public class SubscriberRequest
-    {
-        public string? Name { get; set; }
-        public required string Email { get; set; }
-        public bool HasExternalDoubleOptIn { get; set; }
-        public IList<SubscriberCustomField> CustomFields { get; set; } = [];
-        public List<string> Tags { get; set; } = [];
+    public string? Name { get; set; }
+    public required string Email { get; set; }
+    public bool HasExternalDoubleOptIn { get; set; }
+    public IList<SubscriberCustomField> CustomFields { get; set; } = [];
+    public List<string> Tags { get; set; } = [];
         
-        public object? this[string name]
+    public object? this[string name]
+    {
+        get
         {
-            get
-            {
                 return CustomFields.FirstOrDefault(x => x.Name == name)?.Value;
             }
-            set
-            {
+        set
+        {
                 var field = CustomFields.FirstOrDefault(x => x.Name == name);
                 if (field == null)
                 {
@@ -28,6 +28,5 @@
 
                 field.Value = value;
             }
-        }
     }
 }

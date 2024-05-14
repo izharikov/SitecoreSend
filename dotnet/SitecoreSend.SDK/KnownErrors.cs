@@ -1,7 +1,6 @@
-﻿namespace SitecoreSend.SDK
+﻿namespace SitecoreSend.SDK;
+
+public static class KnownErrors
 {
-    public static class KnownErrors
-    {
-        public const string LIST_NOT_FOUND = "LIST_NOT_FOUND";
-    }
+    public const string LIST_NOT_FOUND = "LIST_NOT_FOUND";
 }

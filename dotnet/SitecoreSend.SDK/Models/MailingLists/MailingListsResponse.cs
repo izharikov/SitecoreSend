@@ -1,7 +1,6 @@
-﻿namespace SitecoreSend.SDK
+﻿namespace SitecoreSend.SDK;
+
+public class MailingListsResponse : BasePagingResponse
 {
-    public class MailingListsResponse : BasePagingResponse
-    {
-        public IList<MailingList> MailingLists { get; set; } = [];
-    }
+    public IList<MailingList> MailingLists { get; set; } = [];
 }

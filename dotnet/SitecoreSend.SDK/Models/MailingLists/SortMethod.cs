@@ -1,8 +1,7 @@
-﻿namespace SitecoreSend.SDK
+﻿namespace SitecoreSend.SDK;
+
+public enum SortMethod
 {
-    public enum SortMethod
-    {
-        DESC,
-        ASC,
-    }
+    DESC,
+    ASC,
 }

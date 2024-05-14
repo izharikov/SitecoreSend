@@ -4,7 +4,7 @@ This repository contains API specifications and clients to use Sitecore Send.
 
 _Note_. This repository is unofficial private project and is not supported by Sitecore.
 
-## .NET (still WIP)
+## .NET
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/izharikov/SitecoreSend/dotnet.yml)](https://github.com/izharikov/SitecoreSend/actions/workflows/dotnet.yml)
 
 [![NuGet Version](https://img.shields.io/nuget/v/SitecoreSend.SDK)](https://www.nuget.org/packages/SitecoreSend.SDK)
@@ -28,3 +28,6 @@ See [readme](./api/openapi/README.MD) for more details.
 [Postman collection](./api/postman/collection/Sitecore%20Send%20API.postman_collection.json) generated based on previosly generated for Moosend  (see [article](https://neilkillen.com/2021/12/16/creating-a-postman-collection-for-sitecore-send-moosend/) from Neil Killen for more details).
 
 See [readme](./api/postman/README.MD) for more details.
+
+## Contribute / Bug / Help
+You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. Or please open an [issue](https://github.com/izharikov/SitecoreSend/issues/new).
