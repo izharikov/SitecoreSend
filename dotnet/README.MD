@@ -77,3 +77,6 @@ You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. O
 
 ### Tracking API
 - [ ] Tracking API
+
+### SMTP API
+- [ ] SMTP
