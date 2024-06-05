@@ -4,14 +4,7 @@ namespace SitecoreSend.SDK;
 
 public class CampaignService : BaseApiService, ICampaignService
 {
-    public CampaignService(ApiConfiguration apiConfiguration, HttpClient httpClient) : base(apiConfiguration,
-        httpClient)
-    {
-    }
 
-    public CampaignService(ApiConfiguration apiConfiguration) : base(apiConfiguration)
-    {
-    }
 
     public Task<SendResponse<CampaignListResponse>?> GetAllCampaigns(int page, int pageSize, SortBy sortBy = SortBy.CreatedOn, SortMethod sortMethod = SortMethod.ASC,
         CancellationToken? cancellationToken = null)
@@ -24,5 +17,13 @@ public class CampaignService : BaseApiService, ICampaignService
     {
         var url = Url($"campaigns/{campaignId}/view");
         return Get<SendResponse<Campaign>>(url, cancellationToken);
+    }
+
+    public CampaignService(ApiConfiguration apiConfiguration, Func<HttpClient?> httpClientFactory) : base(apiConfiguration, httpClientFactory)
+    {
+    }
+
+    public CampaignService(ApiConfiguration apiConfiguration) : base(apiConfiguration)
+    {
     }
 }

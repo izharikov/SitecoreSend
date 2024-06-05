@@ -1,4 +1,5 @@
 ﻿using SitecoreSend.SDK.Tests.Http;
+using SitecoreSend.SDK.Tests.Limiter;
 using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests;
@@ -8,15 +9,17 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
     // actual limits are lower, but to ensure it works I increased them
     // https://doc.sitecore.com/send/en/developers/api-documentation/api-rate-limiting.html
     private const int SecondsLimit = 15;
-    
+
     private readonly ISubscribersService _service =
         new SubscribersService(TestsApp.ApiConfiguration,
-            CustomHttpFactory.Create(testOutputHelper),
-            addSubscriberClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 7),
-            addMultipleSubscribersClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 2),
-            unsubscribeFromListClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 20),
-            unsubscribeFromListAndCampaignClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 20),
-            unsubscribeFromAccountClient: CustomHttpFactory.CreateRate(testOutputHelper, SecondsLimit, 20)
+            () => CustomHttpFactory.Create(testOutputHelper), new SubscribersRateLimiterWrapper()
+            {
+                AddSubscriber = SendRateLimits.AddSubscriber.ExecuteAsync,
+                AddMultipleSubscribers = SendRateLimits.AddMultipleSubscribers.ExecuteAsync,
+                UnsubscribeFromAllLists = SendRateLimits.UnsubscribeFromAllLists.ExecuteAsync,
+                UnsubscribeFromList = SendRateLimits.UnsubscribeFromList.ExecuteAsync,
+                UnsubscribeFromListAndCampaign = SendRateLimits.UnsubscribeFromListAndCampaign.ExecuteAsync,
+            }
         );
 
     [Fact]
@@ -197,5 +200,25 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
 
         var result = await _service.UnsubscribeFromAllLists(emails[0]);
         Assert.True(result?.Success);
+    }
+
+    [Fact]
+    public async Task Subscribers_ShouldHandleRateLimit()
+    {
+        var listId = Guid.Parse(TestsApp.Configuration.GetSection("SitecoreSend:TestListId").Value!);
+        var emails = TestsApp.Configuration.GetSection("SitecoreSend:NewMultipleSubscribers").GetChildren()
+            .Select(x => x.Value!).ToList();
+        for (var i = 0; i < 3; i++)
+        {
+            var addSubscribers = await _service.AddMultipleSubscribers(listId,
+                new MultipleSubscribersRequest()
+                {
+                    Subscribers = emails.Select(x => new SubscriberRequest()
+                    {
+                        Email = x,
+                    }).ToList(),
+                });
+            Assert.True(addSubscribers?.Success);
+        }
     }
 }

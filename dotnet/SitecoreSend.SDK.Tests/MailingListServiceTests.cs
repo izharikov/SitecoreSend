@@ -5,8 +5,8 @@ namespace SitecoreSend.SDK.Tests;
 
 public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
 {
-
-    private readonly IMailingListService _service = new MailingListService(TestsApp.ApiConfiguration, CustomHttpFactory.Create(testOutputHelper));
+    private readonly IMailingListService _service =
+        new MailingListService(TestsApp.ApiConfiguration, () => CustomHttpFactory.Create(testOutputHelper));
 
     [Fact]
     public async Task MailingList_OnValidList_CreatesList()
@@ -57,7 +57,7 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         });
         Assert.NotNull(createTextField);
         Assert.NotEqual(Guid.Empty, createTextField.Data);
-            
+
         var createDropdownField = await _service.CreateCustomField(id, new CustomFieldDefinitionRequest()
         {
             Name = "DropDownField",
@@ -66,43 +66,45 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         });
         Assert.NotNull(createDropdownField);
         Assert.NotEqual(Guid.Empty, createDropdownField.Data);
-            
+
         // get list and validate data in created fields
         listResult = await _service.GetMailingList(id);
         Assert.NotNull(listResult?.Data?.CustomFieldsDefinition);
-            
+
         var textField =
             listResult.Data.CustomFieldsDefinition.FirstOrDefault(x => x.ID == createTextField.Data);
         Assert.NotNull(textField);
         Assert.Equal("TextField", textField.Name);
         Assert.Equal(CustomFieldType.Text, textField.Type);
-            
+
         var dropdownField =
             listResult.Data.CustomFieldsDefinition.FirstOrDefault(x => x.ID == createDropdownField.Data);
         Assert.NotNull(dropdownField);
         Assert.Equal("DropDownField", dropdownField.Name);
         Assert.Equal(CustomFieldType.SingleSelectDropdown, dropdownField.Type);
         Assert.Equal(["Option1", "Option2"], dropdownField.Options);
-            
+
         // update field and validate
         var updateTextField = _service.UpdateCustomField(id, textField.ID, new CustomFieldDefinitionRequest()
         {
             Name = "TextField2",
         });
         Assert.NotNull(updateTextField);
-            
+        Assert.True(updateTextField.Result?.Success);
+
+        await Task.Delay(100); // for some reason custom field update can take some time
         listResult = await _service.GetMailingList(id);
         Assert.NotNull(listResult?.Data?.CustomFieldsDefinition);
-            
+
         textField =
             listResult.Data.CustomFieldsDefinition.FirstOrDefault(x => x.ID == textField.ID);
         Assert.NotNull(textField);
         Assert.Equal("TextField2", textField.Name);
-            
+
         // delete and validate
         await _service.RemoveCustomField(id, textField.ID);
         await _service.RemoveCustomField(id, dropdownField.ID);
-            
+
         listResult = await _service.GetMailingList(id);
         Assert.NotNull(listResult?.Data);
         Assert.Null(listResult.Data.CustomFieldsDefinition.FirstOrDefault(x => x.ID == textField.ID));

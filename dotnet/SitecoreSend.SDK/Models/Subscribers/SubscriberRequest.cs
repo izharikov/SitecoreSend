@@ -7,26 +7,24 @@ public class SubscriberRequest
     public bool HasExternalDoubleOptIn { get; set; }
     public IList<SubscriberCustomField> CustomFields { get; set; } = [];
     public List<string> Tags { get; set; } = [];
-        
+    public SubscriberStatus SubscribeType { get; set; }
+
     public object? this[string name]
     {
-        get
-        {
-                return CustomFields.FirstOrDefault(x => x.Name == name)?.Value;
-            }
+        get { return CustomFields.FirstOrDefault(x => x.Name == name)?.Value; }
         set
         {
-                var field = CustomFields.FirstOrDefault(x => x.Name == name);
-                if (field == null)
+            var field = CustomFields.FirstOrDefault(x => x.Name == name);
+            if (field == null)
+            {
+                field = new SubscriberCustomField()
                 {
-                    field = new SubscriberCustomField()
-                    {
-                        Name = name,
-                    };
-                    CustomFields.Add(field);
-                }
-
-                field.Value = value;
+                    Name = name,
+                };
+                CustomFields.Add(field);
             }
+
+            field.Value = value;
+        }
     }
 }

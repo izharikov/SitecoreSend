@@ -113,7 +113,7 @@ public interface IMailingListService
     /// <param name="request">Request body</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns>Response object with the ID of the created custom field.</returns>
-    Task<SendResponse<Guid>?> CreateCustomField(Guid mailingListId, CustomFieldDefinitionRequest request,
+    Task<SendResponse<Guid?>?> CreateCustomField(Guid mailingListId, CustomFieldDefinitionRequest request,
         CancellationToken? cancellationToken = null);
 
     /// <summary>

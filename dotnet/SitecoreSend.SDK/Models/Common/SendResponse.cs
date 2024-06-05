@@ -13,4 +13,5 @@ public class SendResponse
     public int Code { get; set; }
     public string? Error { get; set; }
     public bool Success => Code == 0 && string.IsNullOrEmpty(Error);
+    public RateLimitDetails? RateLimitDetails { get; set; }
 }
