@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -45,7 +46,7 @@ public abstract class BaseApiService
                 !string.IsNullOrEmpty(queryParams[i + 1]?.ToString()))
             {
                 result.Append('&').Append(queryParams[i]).Append('=')
-                    .Append(queryParams[i + 1]);
+                    .Append(WebUtility.UrlEncode(queryParams[i + 1]?.ToString()));
             }
         }
 
