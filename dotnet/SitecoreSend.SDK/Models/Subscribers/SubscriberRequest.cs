@@ -7,7 +7,7 @@ public class SubscriberRequest
     public bool HasExternalDoubleOptIn { get; set; }
     public IList<SubscriberCustomField> CustomFields { get; set; } = [];
     public List<string> Tags { get; set; } = [];
-    public SubscriberStatus SubscribeType { get; set; }
+    public SubscriberStatus SubscribeType { get; set; } = SubscriberStatus.Subscribed;
 
     public object? this[string name]
     {
