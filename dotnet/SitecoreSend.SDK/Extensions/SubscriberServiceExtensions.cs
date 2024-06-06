@@ -26,15 +26,15 @@ public static class SubscriberServiceExtensions
     }
 
     public static async Task<SendResponse<Subscriber>?> EnsureSubscribed(
-        this ISubscribersService subscribersService, Guid listId, string email,
+        this ISubscribersService subscribersService, Guid listId, string email, bool subscribeIfNotExists = true,
         CancellationToken? cancellationToken = null)
     {
-        return (await subscribersService.EnsureSubscribedDetailed(listId, email, cancellationToken)).Item1;
+        return (await subscribersService.EnsureSubscribedDetailed(listId, email, subscribeIfNotExists, cancellationToken)).Item1;
     }
     
 
     public static async Task<(SendResponse<Subscriber>?, ServiceOperation)> EnsureSubscribedDetailed(
-        this ISubscribersService subscribersService, Guid listId, string email,
+        this ISubscribersService subscribersService, Guid listId, string email, bool subscribeIfNotExists = true,
         CancellationToken? cancellationToken = null)
     {
         var existing = await subscribersService.GetSubscriberByEmail(listId, email, cancellationToken);
@@ -52,6 +52,11 @@ public static class SubscriberServiceExtensions
             }, cancellationToken), ServiceOperation.Update);
         }
 
+        if (!subscribeIfNotExists)
+        {
+            return (null, ServiceOperation.None);
+        }
+        
         return (await subscribersService.AddSubscriber(listId, new SubscriberRequest()
         {
             Email = email,
