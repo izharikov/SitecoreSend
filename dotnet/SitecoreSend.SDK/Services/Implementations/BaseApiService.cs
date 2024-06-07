@@ -10,23 +10,21 @@ public abstract class BaseApiService : IDisposable
 {
     private const string Format = ".json";
 
-    private HttpClient _httpClient => _internalClient ??=
-        EnsureClient(_factory());
+    private HttpClient _httpClient =>
+        EnsureClient(_factory?.Invoke() ?? (_internalClient ??= CreateDefaultClient(_apiConfiguration)));
 
+    // if _factory is null or _factory result is null then initialize default client
     private HttpClient? _internalClient;
-    private readonly Func<HttpClient> _factory;
+    private readonly Func<HttpClient?>? _factory;
     private readonly ApiConfiguration _apiConfiguration;
-    private readonly bool _disposeHttpClient;
 
-    protected BaseApiService(ApiConfiguration apiConfiguration, Func<HttpClient> httpClientFactory,
-        bool disposeHttpClient = false)
+    protected BaseApiService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory)
     {
         _apiConfiguration = apiConfiguration;
         _factory = httpClientFactory;
-        _disposeHttpClient = disposeHttpClient;
     }
 
-    internal static HttpClient CreateDefaultClient(ApiConfiguration apiConfiguration)
+    private static HttpClient CreateDefaultClient(ApiConfiguration apiConfiguration)
     {
         return new HttpClient()
         {
@@ -134,9 +132,7 @@ public abstract class BaseApiService : IDisposable
 
     public void Dispose()
     {
-        if (_disposeHttpClient)
-        {
-            _internalClient?.Dispose();
-        }
+        // dispose only internally created client, do not touch _factory clients
+        _internalClient?.Dispose();
     }
 }

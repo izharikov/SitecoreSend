@@ -8,16 +8,13 @@ public class SendClient : ISendClient
     public IMailingListService Lists { get; }
     public ISubscribersService Subscribers { get; }
 
-    public SendClient(ApiConfiguration apiConfiguration, Func<HttpClient>? httpClientFactory = null,
-        RateLimiterConfiguration? rateLimiterConfiguration = null, bool disposeHttpClient = false)
+    public SendClient(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+        RateLimiterConfiguration? rateLimiterConfiguration = null)
     {
-        var client = httpClientFactory?.Invoke() ?? BaseApiService.CreateDefaultClient(apiConfiguration);
-        // use single client for all services
-        var factory = () => client;
-        Campaigns = new CampaignService(apiConfiguration, factory, disposeHttpClient);
-        Lists = new MailingListService(apiConfiguration, factory, disposeHttpClient);
-        Subscribers = new SubscribersService(apiConfiguration, factory,
-            rateLimiterConfiguration?.Subscribers, disposeHttpClient);
+        Campaigns = new CampaignService(apiConfiguration, httpClientFactory);
+        Lists = new MailingListService(apiConfiguration, httpClientFactory);
+        Subscribers = new SubscribersService(apiConfiguration, httpClientFactory,
+            rateLimiterConfiguration?.Subscribers);
     }
 
     public void Dispose()
