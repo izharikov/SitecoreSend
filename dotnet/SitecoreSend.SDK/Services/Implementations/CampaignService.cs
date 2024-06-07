@@ -18,7 +18,7 @@ public class CampaignService : BaseApiService, ICampaignService
         return Get<SendResponse<Campaign>>(url, cancellationToken);
     }
 
-    public CampaignService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+    public CampaignService(ApiConfiguration apiConfiguration, Func<HttpClient> httpClientFactory,
         bool disposeHttpClient = false) : base(apiConfiguration, httpClientFactory, disposeHttpClient)
     {
     }

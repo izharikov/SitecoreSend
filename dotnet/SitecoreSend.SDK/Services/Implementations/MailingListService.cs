@@ -92,7 +92,7 @@ public class MailingListService : BaseApiService, IMailingListService
         return Delete<SendResponse>(url, cancellationToken);
     }
 
-    public MailingListService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+    public MailingListService(ApiConfiguration apiConfiguration, Func<HttpClient> httpClientFactory,
         bool disposeHttpClient = false) : base(apiConfiguration, httpClientFactory, disposeHttpClient)
     {
     }

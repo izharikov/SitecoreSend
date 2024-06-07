@@ -11,7 +11,7 @@ public class SendClient : ISendClient
     public SendClient(ApiConfiguration apiConfiguration, Func<HttpClient>? httpClientFactory = null,
         RateLimiterConfiguration? rateLimiterConfiguration = null, bool disposeHttpClient = false)
     {
-        var client = httpClientFactory?.Invoke();
+        var client = httpClientFactory?.Invoke() ?? BaseApiService.CreateDefaultClient(apiConfiguration);
         // use single client for all services
         var factory = () => client;
         Campaigns = new CampaignService(apiConfiguration, factory, disposeHttpClient);

@@ -11,24 +11,22 @@ public abstract class BaseApiService : IDisposable
     private const string Format = ".json";
 
     private HttpClient _httpClient => _internalClient ??=
-        EnsureClient(_factory() ?? _defaultClient ?? CreateDefaultClient(_apiConfiguration));
+        EnsureClient(_factory());
 
-    private readonly HttpClient? _defaultClient;
     private HttpClient? _internalClient;
-    private readonly Func<HttpClient?> _factory;
+    private readonly Func<HttpClient> _factory;
     private readonly ApiConfiguration _apiConfiguration;
     private readonly bool _disposeHttpClient;
 
-    protected BaseApiService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+    protected BaseApiService(ApiConfiguration apiConfiguration, Func<HttpClient> httpClientFactory,
         bool disposeHttpClient = false)
     {
         _apiConfiguration = apiConfiguration;
-        _factory = httpClientFactory ?? (() => null);
-        _defaultClient = null;
+        _factory = httpClientFactory;
         _disposeHttpClient = disposeHttpClient;
     }
 
-    protected static HttpClient CreateDefaultClient(ApiConfiguration apiConfiguration)
+    internal static HttpClient CreateDefaultClient(ApiConfiguration apiConfiguration)
     {
         return new HttpClient()
         {
@@ -138,7 +136,6 @@ public abstract class BaseApiService : IDisposable
     {
         if (_disposeHttpClient)
         {
-            _defaultClient?.Dispose();
             _internalClient?.Dispose();
         }
     }

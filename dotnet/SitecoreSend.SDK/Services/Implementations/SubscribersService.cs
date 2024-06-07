@@ -110,7 +110,7 @@ public class SubscribersService : BaseApiService, ISubscribersService
         return func == null ? apiCall() : func(_ => apiCall(), cancellationToken ?? CancellationToken.None);
     }
 
-    public SubscribersService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+    public SubscribersService(ApiConfiguration apiConfiguration, Func<HttpClient> httpClientFactory,
         SubscribersWrapper? limiterWrapper = null, bool disposeHttpClient = false) : base(
         apiConfiguration, httpClientFactory, disposeHttpClient)
     {
