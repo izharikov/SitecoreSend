@@ -3,7 +3,7 @@
 /// <summary>
 /// Use to fetch your subscribers, get details about your subscribers, add, update, remove subscribers, and unsubscribe subscribers from email lists or campaigns.
 /// </summary>
-public interface ISubscribersService
+public interface ISubscribersService : IDisposable
 {
     /// <summary>
     /// Retrieves a list of subscribers in a specific email list in your Sitecore Send account. You can filter the list by status. Because this call can return a large number of results, you can add paging information as input.
@@ -14,7 +14,7 @@ public interface ISubscribersService
     /// <param name="pageSize">The page size of subscriber statistics results to return.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<SubscribersResponse>?> GetAllSubscribers(Guid listId,
+    Task<SendResponse<SubscribersResponse>?> GetAll(Guid listId,
         SubscriberStatus status = SubscriberStatus.Subscribed,
         int? page = null, int? pageSize = null,
         CancellationToken? cancellationToken = null);
@@ -26,7 +26,7 @@ public interface ISubscribersService
     /// <param name="email">The email address of the subscriber.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<Subscriber>?> GetSubscriberByEmail(Guid listId, string email,
+    Task<SendResponse<Subscriber>?> GetByEmail(Guid listId, string email,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -36,7 +36,7 @@ public interface ISubscribersService
     /// <param name="subscriberId">The ID of the subscriber.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<Subscriber>?> GetSubscriberById(Guid listId, Guid subscriberId,
+    Task<SendResponse<Subscriber>?> Get(Guid listId, Guid subscriberId,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -47,7 +47,7 @@ public interface ISubscribersService
     /// <param name="request">Request body</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<Subscriber>?> AddSubscriber(Guid listId, SubscriberRequest request,
+    Task<SendResponse<Subscriber>?> Add(Guid listId, SubscriberRequest request,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -58,7 +58,7 @@ public interface ISubscribersService
     /// <param name="request">Request body</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<IList<Subscriber>>?> AddMultipleSubscribers(Guid listId,
+    Task<SendResponse<IList<Subscriber>>?> AddMultiple(Guid listId,
         MultipleSubscribersRequest request, CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -69,7 +69,7 @@ public interface ISubscribersService
     /// <param name="request">Request body</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<Subscriber>?> UpdateSubscriber(Guid listId, Guid subscriberId, SubscriberRequest request,
+    Task<SendResponse<Subscriber>?> Update(Guid listId, Guid subscriberId, SubscriberRequest request,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -78,7 +78,7 @@ public interface ISubscribersService
     /// <param name="email">The email address of the subscriber.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse?> UnsubscribeFromAllLists(string email, CancellationToken? cancellationToken = null);
+    Task<SendResponse?> UnsubscribeFromAll(string email, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Unsubscribes a subscriber from a specific email list in your Sitecore Send account.
@@ -87,7 +87,7 @@ public interface ISubscribersService
     /// <param name="email">The email address of the subscriber.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse?> UnsubscribeFromList(Guid listId, string email, CancellationToken? cancellationToken = null);
+    Task<SendResponse?> Unsubscribe(Guid listId, string email, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Unsubscribes a subscriber from a specific email list and campaign. This call considers the Unsubscribe settings in your Sitecore Send account where you can specify whether to remove a subscriber from all other email lists.
@@ -107,7 +107,7 @@ public interface ISubscribersService
     /// <param name="email">The email address of the subscriber.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse?> RemoveSubscriberFromList(Guid listId, string email,
+    Task<SendResponse?> Remove(Guid listId, string email,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -117,7 +117,7 @@ public interface ISubscribersService
     /// <param name="emails">A list of subscriber email addresses that you want to remove from the email list.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<RemoveMultipleSubscribersResponse>?> RemoveMultipleSubscribersFromList(Guid listId,
+    Task<SendResponse<RemoveMultipleSubscribersResponse>?> RemoveMultiple(Guid listId,
         string[] emails,
         CancellationToken? cancellationToken = null);
 }

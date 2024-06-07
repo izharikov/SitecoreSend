@@ -15,14 +15,14 @@ public static class SubscriberServiceExtensions
         SubscriberRequest subscriberRequest, CancellationToken? cancellationToken = null)
     {
         var existing =
-            await subscribersService.GetSubscriberByEmail(listId, subscriberRequest.Email, cancellationToken);
+            await subscribersService.GetByEmail(listId, subscriberRequest.Email, cancellationToken);
         if (existing is {Success: true, Data: not null})
         {
-            return (await subscribersService.UpdateSubscriber(listId, existing.Data.ID, subscriberRequest,
+            return (await subscribersService.Update(listId, existing.Data.ID, subscriberRequest,
                 cancellationToken), ServiceOperation.Update);
         }
 
-        return (await subscribersService.AddSubscriber(listId, subscriberRequest, cancellationToken), ServiceOperation.Add);
+        return (await subscribersService.Add(listId, subscriberRequest, cancellationToken), ServiceOperation.Add);
     }
 
     public static async Task<SendResponse<Subscriber>?> EnsureSubscribed(
@@ -37,7 +37,7 @@ public static class SubscriberServiceExtensions
         this ISubscribersService subscribersService, Guid listId, string email, bool subscribeIfNotExists = true,
         CancellationToken? cancellationToken = null)
     {
-        var existing = await subscribersService.GetSubscriberByEmail(listId, email, cancellationToken);
+        var existing = await subscribersService.GetByEmail(listId, email, cancellationToken);
         if (existing is {Success: true, Data: not null})
         {
             if (existing.Data.SubscribeType == SubscriberStatus.Subscribed)
@@ -45,7 +45,7 @@ public static class SubscriberServiceExtensions
                 return (existing, ServiceOperation.None);
             }
 
-            return (await subscribersService.UpdateSubscriber(listId, existing.Data.ID, new SubscriberRequest()
+            return (await subscribersService.Update(listId, existing.Data.ID, new SubscriberRequest()
             {
                 Email = email,
                 SubscribeType = SubscriberStatus.Subscribed,
@@ -57,7 +57,7 @@ public static class SubscriberServiceExtensions
             return (null, ServiceOperation.None);
         }
         
-        return (await subscribersService.AddSubscriber(listId, new SubscriberRequest()
+        return (await subscribersService.Add(listId, new SubscriberRequest()
         {
             Email = email,
             SubscribeType = SubscriberStatus.Subscribed,

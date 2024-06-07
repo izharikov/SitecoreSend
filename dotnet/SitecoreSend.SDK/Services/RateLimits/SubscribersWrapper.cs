@@ -1,6 +1,6 @@
 ﻿namespace SitecoreSend.SDK;
 
-public class SubscribersRateLimiterWrapper
+public class SubscribersWrapper
 {
     public Wrapper<SendResponse<Subscriber>>? AddSubscriber { get; set; }
     public Wrapper<SendResponse<IList<Subscriber>>>? AddMultipleSubscribers { get; set; }
@@ -8,6 +8,3 @@ public class SubscribersRateLimiterWrapper
     public Wrapper<SendResponse>? UnsubscribeFromList { get; set; }
     public Wrapper<SendResponse>? UnsubscribeFromListAndCampaign { get; set; }
 }
-
-public delegate Task<T?> Wrapper<T>(Func<CancellationToken, Task<T?>> originalFunction,
-    CancellationToken cancellationToken);

@@ -15,9 +15,9 @@ var apiConfiguration = new ApiConfiguration
 };
 
 // or any other service
-IMailingListService mailingListService = new MailingListService(apiConfiguration);
+ISendClient send = new SendClient(apiConfiguration);
 
-var response = await mailingListService.GetAllMailingLists();
+var response = await send.Lists.GetAll();
 
 // ensure response is not null and Success is true
 if (response is {Success: true})
@@ -36,33 +36,67 @@ var apiConfiguration = new ApiConfiguration
 };
 serviceCollection.AddHttpClient("SitecoreSendClient",
     (client) => { client.BaseAddress = new Uri(apiConfiguration.BaseUri); });
-serviceCollection.AddSingleton<IMailingListService>(provider =>
+serviceCollection.AddSingleton<ISendClient>(provider =>
 {
     var factory = provider.GetRequiredService<IHttpClientFactory>();
-    return new MailingListService(apiConfiguration,
+    return new SendClient(apiConfiguration,
         () => factory.CreateClient("SitecoreSendClient"));
 });
 ```
 
 ## API Rate limit
-Sitecore Send comes with [API rate limits](https://doc.sitecore.com/send/en/developers/api-documentation/api-rate-limiting.html) for some endpoints.
+Sitecore Send comes with [API rate limits](https://doc.sitecore.com/send/en/developers/api-documentation/api-rate-limiting.html) for subscribe/unsubscribe endpoints.
 
-Current library supports handling of them with 'Wrapping' limited methods around configured policies.
+### Handle within SDK
+To check if rate limit occurred the following can be used:
+```csharp
+var response = _send.Subscribers.Add(...);
+// option 1:
+if (response?.Code == KnownErrors.RATE_LIMITING) 
+{
+    ...
+}
+// option 2:
+if (response?.RateLimitDetails != null)
+{
+    ...
+}
+```
 
+Current library supports handling of them with 'Wrapping' limited methods with configured policies.
+
+### Polly
 The following [Polly](https://github.com/App-vNext/Polly) policies configuration can be used: [link](./SitecoreSend.SDK.Tests/Limiter/SendRateLimiterPolicy.cs).
 
 Currently, applies only for `SubscribersService`:
 ```csharp
-new SubscribersService(apiConfiguration,
-    httpClientFactory, new SubscribersRateLimiterWrapper()
+new SendClient(
+    apiConfiguration,
+    httpClientFactory, 
+    new RateLimiterConfiguration()
     {
-        AddSubscriber = SendRateLimits.AddSubscriber.ExecuteAsync,
-        AddMultipleSubscribers = SendRateLimits.AddMultipleSubscribers.ExecuteAsync,
-        UnsubscribeFromAllLists = SendRateLimits.UnsubscribeFromAllLists.ExecuteAsync,
-        UnsubscribeFromList = SendRateLimits.UnsubscribeFromList.ExecuteAsync,
-        UnsubscribeFromListAndCampaign = SendRateLimits.UnsubscribeFromListAndCampaign.ExecuteAsync,
+        Subscribers = new SubscribersWrapper()
+        {
+            AddSubscriber = SendRateLimits.AddSubscriber.ExecuteAsync,
+            AddMultipleSubscribers = SendRateLimits.AddMultipleSubscribers.ExecuteAsync,
+            UnsubscribeFromAllLists = SendRateLimits.UnsubscribeFromAllLists.ExecuteAsync,
+            UnsubscribeFromList = SendRateLimits.UnsubscribeFromList.ExecuteAsync,
+            UnsubscribeFromListAndCampaign = SendRateLimits.UnsubscribeFromListAndCampaign.ExecuteAsync,
+        },
     }
 );
+```
+### Avoid rate limit issues
+Whenever possible use `Get`, `Update` methods of `ISendClient.Subscribers`.
+
+E.g. if you need to ensure user exists in the list, use extension methods:
+
+```csharp
+// check if subscriber exists => then update, if not => create
+_send.Subscribers.CreateOrUpdate(listId, ...);
+
+// check if user is subscribed to the list, if subscribeIfNotExists == true => subscribe to list
+_send.Subscribers.EnsureSubscribed(listId, email, subscribeIfNotExists);
 ```
 
 ## Integration tests
@@ -93,6 +127,7 @@ You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. O
 - [x] Mailing list service
 - [x] Subscribers service
 - [ ] Campaigns service (WIP)
+- [ ] Transactional Campaigns Methods
 - [ ] Segments service
 
 ### Internal API

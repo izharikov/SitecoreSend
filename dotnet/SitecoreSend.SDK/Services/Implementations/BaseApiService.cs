@@ -6,25 +6,26 @@ using System.Text;
 
 namespace SitecoreSend.SDK;
 
-public abstract class BaseApiService
+public abstract class BaseApiService : IDisposable
 {
     private const string Format = ".json";
 
-    private HttpClient _httpClient => EnsureClient(_factory() ?? _defaultClient ?? CreateDefaultClient(_apiConfiguration));
+    private HttpClient _httpClient => _internalClient ??=
+        EnsureClient(_factory() ?? _defaultClient ?? CreateDefaultClient(_apiConfiguration));
+
     private readonly HttpClient? _defaultClient;
+    private HttpClient? _internalClient;
     private readonly Func<HttpClient?> _factory;
     private readonly ApiConfiguration _apiConfiguration;
+    private readonly bool _disposeHttpClient;
 
-    protected BaseApiService(ApiConfiguration apiConfiguration, Func<HttpClient?> httpClientFactory)
+    protected BaseApiService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+        bool disposeHttpClient = false)
     {
         _apiConfiguration = apiConfiguration;
-        _factory = httpClientFactory;
+        _factory = httpClientFactory ?? (() => null);
         _defaultClient = null;
-    }
-
-    protected BaseApiService(ApiConfiguration apiConfiguration) : this(apiConfiguration, () => null)
-    {
-        _defaultClient = CreateDefaultClient(apiConfiguration);
+        _disposeHttpClient = disposeHttpClient;
     }
 
     protected static HttpClient CreateDefaultClient(ApiConfiguration apiConfiguration)
@@ -58,7 +59,8 @@ public abstract class BaseApiService
         return await Get<T>(_httpClient, url, cancellationToken);
     }
 
-    protected async Task<T?> Get<T>(HttpClient client, string url, CancellationToken? cancellationToken = null) where T : SendResponse
+    protected async Task<T?> Get<T>(HttpClient client, string url, CancellationToken? cancellationToken = null)
+        where T : SendResponse
     {
         var response = await client.GetAsync(url, cancellationToken ?? CancellationToken.None);
         return await ReadResponse<T>(response).ConfigureAwait(false);
@@ -91,7 +93,8 @@ public abstract class BaseApiService
         return await ReadResponse<TResponse>(response).ConfigureAwait(false);
     }
 
-    protected async Task<TResponse?> ReadResponse<TResponse>(HttpResponseMessage response) where TResponse : SendResponse
+    protected async Task<TResponse?> ReadResponse<TResponse>(HttpResponseMessage response)
+        where TResponse : SendResponse
     {
         var result = await response.Content.ReadFromJsonAsync<TResponse>();
         if (result?.Error == KnownErrors.RATE_LIMITING)
@@ -128,5 +131,15 @@ public abstract class BaseApiService
         }
 
         return null;
+    }
+
+
+    public void Dispose()
+    {
+        if (_disposeHttpClient)
+        {
+            _defaultClient?.Dispose();
+            _internalClient?.Dispose();
+        }
     }
 }

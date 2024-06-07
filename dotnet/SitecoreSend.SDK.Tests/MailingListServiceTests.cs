@@ -5,24 +5,23 @@ namespace SitecoreSend.SDK.Tests;
 
 public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
 {
-    private readonly IMailingListService _service =
-        new MailingListService(TestsApp.ApiConfiguration, () => CustomHttpFactory.Create(testOutputHelper));
+    private readonly ISendClient _send = TestsApp.SendFactory(testOutputHelper);
 
     [Fact]
     public async Task MailingList_OnValidList_CreatesList()
     {
-        var result = await _service.CreateMailingList(new MailingListRequest
+        var result = await _send.Lists.Create(new MailingListRequest
         {
             Name = "Test Name",
         });
         Assert.NotNull(result);
         Assert.NotEqual(Guid.Empty, result.Data);
-        var getListResult = await _service.GetMailingList(result.Data);
+        var getListResult = await _send.Lists.Get(result.Data);
         Assert.NotNull(getListResult?.Data);
         Assert.Equal(result.Data, getListResult.Data.ID);
         Assert.Equal("Test Name", getListResult.Data.Name);
 
-        var updateListResult = await _service.UpdateMailingList(getListResult.Data.ID, new MailingListRequest()
+        var updateListResult = await _send.Lists.Update(getListResult.Data.ID, new MailingListRequest()
         {
             Name = "Test Name 2",
             ConfirmationPage = "http://localhost/confirm",
@@ -33,7 +32,7 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.NotEqual(Guid.Empty, updateListResult.Data);
         Assert.Equal(getListResult.Data.ID, updateListResult.Data);
 
-        getListResult = await _service.GetMailingList<MailingList>(updateListResult.Data);
+        getListResult = await _send.Lists.Get<MailingList>(updateListResult.Data);
         Assert.NotNull(getListResult?.Data);
         Assert.Equal(result.Data, getListResult.Data.ID);
         Assert.Equal("Test Name 2", getListResult.Data.Name);
@@ -46,11 +45,11 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
     public async Task CustomFields_OnCreateUpdateDelete_ShouldPerformOperations()
     {
         var id = Guid.Parse(TestsApp.Configuration.GetSection("SitecoreSend:TestListId").Value!);
-        var listResult = await _service.GetMailingList(id);
+        var listResult = await _send.Lists.Get(id);
         Assert.NotNull(listResult?.Data);
 
         // Create a few custom fields
-        var createTextField = await _service.CreateCustomField(id, new CustomFieldDefinitionRequest()
+        var createTextField = await _send.Lists.CreateCustomField(id, new CustomFieldDefinitionRequest()
         {
             Name = "TextField",
             CustomFieldType = CustomFieldType.Text,
@@ -58,7 +57,7 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.NotNull(createTextField);
         Assert.NotEqual(Guid.Empty, createTextField.Data);
 
-        var createDropdownField = await _service.CreateCustomField(id, new CustomFieldDefinitionRequest()
+        var createDropdownField = await _send.Lists.CreateCustomField(id, new CustomFieldDefinitionRequest()
         {
             Name = "DropDownField",
             CustomFieldType = CustomFieldType.SingleSelectDropdown,
@@ -68,7 +67,7 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.NotEqual(Guid.Empty, createDropdownField.Data);
 
         // get list and validate data in created fields
-        listResult = await _service.GetMailingList(id);
+        listResult = await _send.Lists.Get(id);
         Assert.NotNull(listResult?.Data?.CustomFieldsDefinition);
 
         var textField =
@@ -85,7 +84,7 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.Equal(["Option1", "Option2"], dropdownField.Options);
 
         // update field and validate
-        var updateTextField = _service.UpdateCustomField(id, textField.ID, new CustomFieldDefinitionRequest()
+        var updateTextField = _send.Lists.UpdateCustomField(id, textField.ID, new CustomFieldDefinitionRequest()
         {
             Name = "TextField2",
         });
@@ -93,7 +92,7 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.True(updateTextField.Result?.Success);
 
         await Task.Delay(100); // for some reason custom field update can take some time
-        listResult = await _service.GetMailingList(id);
+        listResult = await _send.Lists.Get(id);
         Assert.NotNull(listResult?.Data?.CustomFieldsDefinition);
 
         textField =
@@ -102,10 +101,10 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.Equal("TextField2", textField.Name);
 
         // delete and validate
-        await _service.RemoveCustomField(id, textField.ID);
-        await _service.RemoveCustomField(id, dropdownField.ID);
+        await _send.Lists.RemoveCustomField(id, textField.ID);
+        await _send.Lists.RemoveCustomField(id, dropdownField.ID);
 
-        listResult = await _service.GetMailingList(id);
+        listResult = await _send.Lists.Get(id);
         Assert.NotNull(listResult?.Data);
         Assert.Null(listResult.Data.CustomFieldsDefinition.FirstOrDefault(x => x.ID == textField.ID));
         Assert.Null(listResult.Data.CustomFieldsDefinition.FirstOrDefault(x => x.ID == dropdownField.ID));
@@ -113,9 +112,9 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
 
     private async Task DeleteListAndAssertDeleted(Guid id)
     {
-        var removeList = await _service.DeleteMailingList(id);
+        var removeList = await _send.Lists.Delete(id);
         Assert.True(removeList?.Success);
-        var getListAfterDeleteResult = await _service.GetMailingList(id);
+        var getListAfterDeleteResult = await _send.Lists.Get(id);
         Assert.NotNull(getListAfterDeleteResult);
         Assert.Null(getListAfterDeleteResult.Data);
         Assert.Equal(KnownErrors.LIST_NOT_FOUND, getListAfterDeleteResult.Error);
@@ -124,6 +123,6 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task GetAllMailingLists_OnValidApiKey_ShouldReturnLists()
     {
-        var lists = await _service.GetAllMailingLists();
+        var lists = await _send.Lists.GetAll();
     }
 }

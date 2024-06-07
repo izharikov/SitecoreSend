@@ -3,7 +3,7 @@
 /// <summary>
 /// Use to get your email lists, get details about email lists, create, update, and delete email lists. You can also create, update, or remove custom fields in your email lists.
 /// </summary>
-public interface IMailingListService
+public interface IMailingListService : IDisposable
 {
     /// <summary>
     /// Retrieves a list of all the active email lists in your Sitecore Send account.
@@ -13,7 +13,7 @@ public interface IMailingListService
     /// <param name="sortMethod">Specifies the method to sort results.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<MailingListsResponse>?> GetAllMailingLists(bool withStatistics = true,
+    Task<SendResponse<MailingListsResponse>?> GetAll(bool withStatistics = true,
         SortBy sortBy = SortBy.CreatedOn,
         SortMethod sortMethod = SortMethod.ASC, CancellationToken? cancellationToken = null);
 
@@ -25,7 +25,7 @@ public interface IMailingListService
     /// <param name="sortMethod">Specifies the method to sort results.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<TResponse>?> GetAllMailingLists<TResponse>(bool withStatistics = true,
+    Task<SendResponse<TResponse>?> GetAll<TResponse>(bool withStatistics = true,
         SortBy sortBy = SortBy.CreatedOn,
         SortMethod sortMethod = SortMethod.ASC, CancellationToken? cancellationToken = null);
 
@@ -39,7 +39,7 @@ public interface IMailingListService
     /// <param name="sortMethod">Specifies the method to sort results.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<MailingListsResponse>?> GetMailingListsWithPaging(int page, int pageSize,
+    Task<SendResponse<MailingListsResponse>?> GetWithPaging(int page, int pageSize,
         bool withStatistics = true, SortBy sortBy = SortBy.CreatedOn, SortMethod sortMethod = SortMethod.ASC,
         CancellationToken? cancellationToken = null);
 
@@ -54,7 +54,7 @@ public interface IMailingListService
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <typeparam name="TResponse">Custom type for response.</typeparam>
     /// <returns></returns>
-    Task<SendResponse<TResponse>?> GetMailingListsWithPaging<TResponse>(int page, int pageSize,
+    Task<SendResponse<TResponse>?> GetWithPaging<TResponse>(int page, int pageSize,
         bool withStatistics = true, SortBy sortBy = SortBy.CreatedOn, SortMethod sortMethod = SortMethod.ASC,
         CancellationToken? cancellationToken = null);
 
@@ -65,7 +65,7 @@ public interface IMailingListService
     /// <param name="withStatistics">Specifies whether to fetch statistics for the subscribers.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse<MailingList>?> GetMailingList(Guid id, bool withStatistics = true,
+    Task<SendResponse<MailingList>?> Get(Guid id, bool withStatistics = true,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -76,7 +76,7 @@ public interface IMailingListService
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <typeparam name="TResponse">Custom type for response.</typeparam>
     /// <returns></returns>
-    Task<SendResponse<TResponse>?> GetMailingList<TResponse>(Guid id, bool withStatistics = true,
+    Task<SendResponse<TResponse>?> Get<TResponse>(Guid id, bool withStatistics = true,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -85,7 +85,7 @@ public interface IMailingListService
     /// <param name="request">Request body</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns>Response object with the ID of the email list created.</returns>
-    Task<SendResponse<Guid>?> CreateMailingList(MailingListRequest request,
+    Task<SendResponse<Guid>?> Create(MailingListRequest request,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -95,7 +95,7 @@ public interface IMailingListService
     /// <param name="request">Request body</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns>Response object with the ID of the updated email list.</returns>
-    Task<SendResponse<Guid>?> UpdateMailingList(Guid id, MailingListRequest request,
+    Task<SendResponse<Guid>?> Update(Guid id, MailingListRequest request,
         CancellationToken? cancellationToken = null);
 
     /// <summary>
@@ -104,7 +104,7 @@ public interface IMailingListService
     /// <param name="id">The ID of the email list to be deleted.</param>
     /// <param name="cancellationToken">Optional cancellation token</param>
     /// <returns></returns>
-    Task<SendResponse?> DeleteMailingList(Guid id, CancellationToken? cancellationToken = null);
+    Task<SendResponse?> Delete(Guid id, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Creates a new custom field in a specific email list.

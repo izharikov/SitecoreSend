@@ -4,15 +4,15 @@ namespace SitecoreSend.SDK;
 
 public class MailingListService : BaseApiService, IMailingListService
 {
-    public Task<SendResponse<MailingListsResponse>?> GetAllMailingLists(bool withStatistics = true,
+    public Task<SendResponse<MailingListsResponse>?> GetAll(bool withStatistics = true,
         SortBy sortBy = SortBy.CreatedOn,
         SortMethod sortMethod = SortMethod.ASC, CancellationToken? cancellationToken = null)
     {
-        return GetAllMailingLists<MailingListsResponse>(withStatistics, sortBy, sortMethod,
+        return GetAll<MailingListsResponse>(withStatistics, sortBy, sortMethod,
             cancellationToken);
     }
 
-    public Task<SendResponse<TResponse>?> GetAllMailingLists<TResponse>(bool withStatistics = true,
+    public Task<SendResponse<TResponse>?> GetAll<TResponse>(bool withStatistics = true,
         SortBy sortBy = SortBy.CreatedOn,
         SortMethod sortMethod = SortMethod.ASC, CancellationToken? cancellationToken = null)
     {
@@ -20,15 +20,15 @@ public class MailingListService : BaseApiService, IMailingListService
         return Get<SendResponse<TResponse>>(url, cancellationToken);
     }
 
-    public Task<SendResponse<MailingListsResponse>?> GetMailingListsWithPaging(int page, int pageSize,
+    public Task<SendResponse<MailingListsResponse>?> GetWithPaging(int page, int pageSize,
         bool withStatistics = true, SortBy sortBy = SortBy.CreatedOn,
         SortMethod sortMethod = SortMethod.ASC, CancellationToken? cancellationToken = null)
     {
-        return GetMailingListsWithPaging<MailingListsResponse>(page, pageSize, withStatistics, sortBy, sortMethod,
+        return GetWithPaging<MailingListsResponse>(page, pageSize, withStatistics, sortBy, sortMethod,
             cancellationToken);
     }
 
-    public Task<SendResponse<TResponse>?> GetMailingListsWithPaging<TResponse>(int page, int pageSize,
+    public Task<SendResponse<TResponse>?> GetWithPaging<TResponse>(int page, int pageSize,
         bool withStatistics = true,
         SortBy sortBy = SortBy.CreatedOn, SortMethod sortMethod = SortMethod.ASC,
         CancellationToken? cancellationToken = null)
@@ -38,34 +38,34 @@ public class MailingListService : BaseApiService, IMailingListService
         return Get<SendResponse<TResponse>>(url, cancellationToken);
     }
 
-    public Task<SendResponse<MailingList>?> GetMailingList(Guid id, bool withStatistics = true,
+    public Task<SendResponse<MailingList>?> Get(Guid id, bool withStatistics = true,
         CancellationToken? cancellationToken = null)
     {
-        return GetMailingList<MailingList>(id, withStatistics, cancellationToken);
+        return Get<MailingList>(id, withStatistics, cancellationToken);
     }
 
-    public Task<SendResponse<TResponse>?> GetMailingList<TResponse>(Guid id, bool withStatistics = true,
+    public Task<SendResponse<TResponse>?> Get<TResponse>(Guid id, bool withStatistics = true,
         CancellationToken? cancellationToken = null)
     {
         var url = Url($"lists/{id}/details", "WithStatistics", withStatistics);
         return Get<SendResponse<TResponse>>(url, cancellationToken);
     }
 
-    public Task<SendResponse<Guid>?> CreateMailingList(MailingListRequest request,
+    public Task<SendResponse<Guid>?> Create(MailingListRequest request,
         CancellationToken? cancellationToken = null)
     {
         var url = Url("lists/create");
         return Post<SendResponse<Guid>>(url, request, cancellationToken);
     }
 
-    public Task<SendResponse<Guid>?> UpdateMailingList(Guid id, MailingListRequest request,
+    public Task<SendResponse<Guid>?> Update(Guid id, MailingListRequest request,
         CancellationToken? cancellationToken = null)
     {
         var url = Url($"lists/{id}/update");
         return Post<SendResponse<Guid>>(url, request, cancellationToken);
     }
 
-    public Task<SendResponse?> DeleteMailingList(Guid id, CancellationToken? cancellationToken = null)
+    public Task<SendResponse?> Delete(Guid id, CancellationToken? cancellationToken = null)
     {
         var url = Url($"lists/{id}/delete");
         return Delete<SendResponse>(url, cancellationToken);
@@ -92,11 +92,8 @@ public class MailingListService : BaseApiService, IMailingListService
         return Delete<SendResponse>(url, cancellationToken);
     }
 
-    public MailingListService(ApiConfiguration apiConfiguration, Func<HttpClient?> httpClientFactory) : base(apiConfiguration, httpClientFactory)
-    {
-    }
-
-    public MailingListService(ApiConfiguration apiConfiguration) : base(apiConfiguration)
+    public MailingListService(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
+        bool disposeHttpClient = false) : base(apiConfiguration, httpClientFactory, disposeHttpClient)
     {
     }
 }
