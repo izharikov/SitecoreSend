@@ -2,5 +2,5 @@
 
 public class RateLimiterConfiguration
 {
-    public SubscribersWrapper Subscribers { get; set; }
+    public SubscribersWrapper? Subscribers { get; set; }
 }
