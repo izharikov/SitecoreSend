@@ -36,8 +36,33 @@ var apiConfiguration = new ApiConfiguration
 };
 serviceCollection.AddHttpClient("SitecoreSendClient",
     (client) => { client.BaseAddress = new Uri(apiConfiguration.BaseUri); });
-serviceCollection.AddScoped<IMailingListService>(provider => new MailingListService(apiConfiguration,
-    provider.GetService<IHttpClientFactory>()!.CreateClient("SitecoreSendClient")));
+serviceCollection.AddSingleton<IMailingListService>(provider =>
+{
+    var factory = provider.GetRequiredService<IHttpClientFactory>();
+    return new MailingListService(apiConfiguration,
+        () => factory.CreateClient("SitecoreSendClient"));
+});
+```
+
+## API Rate limit
+Sitecore Send comes with [API rate limits](https://doc.sitecore.com/send/en/developers/api-documentation/api-rate-limiting.html) for some endpoints.
+
+Current library supports handling of them with 'Wrapping' limited methods around configured policies.
+
+The following [Polly](https://github.com/App-vNext/Polly) policies configuration can be used: [link](./SitecoreSend.SDK.Tests/Limiter/SendRateLimiterPolicy.cs).
+
+Currently, applies only for `SubscribersService`:
+```csharp
+new SubscribersService(apiConfiguration,
+    httpClientFactory, new SubscribersRateLimiterWrapper()
+    {
+        AddSubscriber = SendRateLimits.AddSubscriber.ExecuteAsync,
+        AddMultipleSubscribers = SendRateLimits.AddMultipleSubscribers.ExecuteAsync,
+        UnsubscribeFromAllLists = SendRateLimits.UnsubscribeFromAllLists.ExecuteAsync,
+        UnsubscribeFromList = SendRateLimits.UnsubscribeFromList.ExecuteAsync,
+        UnsubscribeFromListAndCampaign = SendRateLimits.UnsubscribeFromListAndCampaign.ExecuteAsync,
+    }
+);
 ```
 
 ## Integration tests

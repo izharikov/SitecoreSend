@@ -12,13 +12,13 @@ public static class SendRateLimits
         new SendRateLimiterPolicy<SendResponse<Subscriber>?>(10, TimeSpan.FromSeconds(10)).Instance;
 
     public static readonly AsyncPolicy<SendResponse?> UnsubscribeFromAllLists =
-        new SendRateLimiterPolicy<SendResponse?>(10, TimeSpan.FromSeconds(10)).Instance;
+        new SendRateLimiterPolicy<SendResponse?>(10, TimeSpan.FromSeconds(20)).Instance;
 
     public static readonly AsyncPolicy<SendResponse?> UnsubscribeFromList =
-        new SendRateLimiterPolicy<SendResponse?>(10, TimeSpan.FromSeconds(10)).Instance;
+        new SendRateLimiterPolicy<SendResponse?>(10, TimeSpan.FromSeconds(20)).Instance;
 
     public static readonly AsyncPolicy<SendResponse?> UnsubscribeFromListAndCampaign =
-        new SendRateLimiterPolicy<SendResponse?>(10, TimeSpan.FromSeconds(10)).Instance;
+        new SendRateLimiterPolicy<SendResponse?>(10, TimeSpan.FromSeconds(20)).Instance;
 }
 
 public class SendRateLimiterPolicy<T> where T : SendResponse?
