@@ -1,4 +1,5 @@
 ﻿using Polly;
+using Polly.Contrib.WaitAndRetry;
 using Polly.RateLimit;
 
 namespace SitecoreSend.SDK.Tests.Limiter;
@@ -29,7 +30,7 @@ public class SendRateLimiterPolicy<T> where T : SendResponse?
         TimeSpan perTimeSpan)
     {
         Instance = Policy.WrapAsync(PoliciesHelper.RetryRateLimit<T>(),
-            PoliciesHelper.RetryRateLimitException<T>(),
+            PoliciesHelper.RetryRateLimitException<T>(numberOfExecutions, perTimeSpan),
             PoliciesHelper.ConfigureRateLimit<T>(numberOfExecutions, perTimeSpan));
     }
 }
@@ -44,17 +45,19 @@ public static class PoliciesHelper
             ;
     }
 
-    public static AsyncPolicy<T> RetryRateLimitException<T>()
+    public static AsyncPolicy<T> RetryRateLimitException<T>(int numberOfExecutions, TimeSpan perTimeSpan)
     {
+        var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: perTimeSpan.Divide(numberOfExecutions) * 1.5,
+            retryCount: 5);
         return Policy<T>.Handle<RateLimitRejectedException>()
-            .WaitAndRetryAsync(3, (i) => TimeSpan.FromSeconds(i * 2));
+            .WaitAndRetryAsync(delay);
     }
 
     public static AsyncPolicy<T> RetryRateLimit<T>() where T : SendResponse?
     {
         return Policy
             .HandleResult<T>((response) => response?.RateLimitDetails != null)
-            .WaitAndRetryAsync(3, (i, result, _) =>
+            .WaitAndRetryAsync(5, (i, result, _) =>
             {
                 if (result.Result?.RateLimitDetails?.Expires != null)
                 {

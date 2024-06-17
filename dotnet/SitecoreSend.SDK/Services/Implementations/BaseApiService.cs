@@ -50,25 +50,25 @@ public abstract class BaseApiService : IDisposable
         return result.ToString();
     }
 
-    protected async Task<T?> Get<T>(string url, CancellationToken? cancellationToken = null) where T : SendResponse
+    protected async Task<T?> Get<T>(string url, CancellationToken? cancellationToken = null) where T : SendResponse, new()
     {
         return await Get<T>(_httpClient, url, cancellationToken);
     }
 
     protected async Task<T?> Get<T>(HttpClient client, string url, CancellationToken? cancellationToken = null)
-        where T : SendResponse
+        where T : SendResponse, new()
     {
         var response = await client.GetAsync(url, cancellationToken ?? CancellationToken.None);
         return await ReadResponse<T>(response).ConfigureAwait(false);
     }
 
-    protected async Task<T?> Delete<T>(string url, CancellationToken? cancellationToken = null) where T : SendResponse
+    protected async Task<T?> Delete<T>(string url, CancellationToken? cancellationToken = null) where T : SendResponse, new()
     {
         return await Delete<T>(_httpClient, url, cancellationToken);
     }
 
     protected async Task<T?> Delete<T>(HttpClient client, string url,
-        CancellationToken? cancellationToken = null) where T : SendResponse
+        CancellationToken? cancellationToken = null) where T : SendResponse, new()
     {
         var response = await client.DeleteAsync(url, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
@@ -76,13 +76,13 @@ public abstract class BaseApiService : IDisposable
     }
 
     protected async Task<TResponse?> Post<TResponse>(string url, object body,
-        CancellationToken? cancellationToken = null) where TResponse : SendResponse
+        CancellationToken? cancellationToken = null) where TResponse : SendResponse, new()
     {
         return await Post<TResponse>(_httpClient, url, body, cancellationToken);
     }
 
     protected async Task<TResponse?> Post<TResponse>(HttpClient client, string url, object body,
-        CancellationToken? cancellationToken = null) where TResponse : SendResponse
+        CancellationToken? cancellationToken = null) where TResponse : SendResponse, new()
     {
         var response = await client.PostAsJsonAsync(url, body, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
@@ -90,18 +90,29 @@ public abstract class BaseApiService : IDisposable
     }
 
     protected async Task<TResponse?> ReadResponse<TResponse>(HttpResponseMessage response)
-        where TResponse : SendResponse
+        where TResponse : SendResponse, new()
     {
-        var result = await response.Content.ReadFromJsonAsync<TResponse>();
-        if (result?.Error == KnownErrors.RATE_LIMITING)
+        if (!response.IsSuccessStatusCode)
         {
-            result.RateLimitDetails = new RateLimitDetails()
+            return new TResponse()
             {
-                FirstCall = GetDateHeader(response, "x-ratelimit-firstcall"),
-                Expires = GetDateHeader(response, "x-ratelimit-expires"),
+                Http = new HttpDetails(response),
+                Error = response.ReasonPhrase,
             };
         }
-
+        var result = await response.Content.ReadFromJsonAsync<TResponse>();
+        if (result != null)
+        {
+            result.Http = new HttpDetails(response);
+            if (result.Error == KnownErrors.RATE_LIMITING)
+            {
+                result.RateLimitDetails = new RateLimitDetails()
+                {
+                    FirstCall = GetDateHeader(response, "x-ratelimit-firstcall"),
+                    Expires = GetDateHeader(response, "x-ratelimit-expires"),
+                };
+            }
+        }
         return result;
     }
 

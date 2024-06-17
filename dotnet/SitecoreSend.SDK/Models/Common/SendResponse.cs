@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Net;
+using System.Text.Json.Serialization;
 
 namespace SitecoreSend.SDK;
 
@@ -11,7 +12,8 @@ public class SendResponse<TResponse> : SendResponse
 public class SendResponse
 {
     public int Code { get; set; }
+    public HttpDetails? Http { get; set; }
     public string? Error { get; set; }
-    public bool Success => Code == 0 && string.IsNullOrEmpty(Error);
+    public bool Success => (Http?.IsSuccess ?? false) && Code == 0 && string.IsNullOrEmpty(Error);
     public RateLimitDetails? RateLimitDetails { get; set; }
 }
