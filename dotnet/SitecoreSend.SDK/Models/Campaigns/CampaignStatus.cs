@@ -12,5 +12,5 @@ public enum CampaignStatus
     SelectingWinner = 11,
     Archived = 12,
     SubscriptionExpired = 13,
-    SubscriptionLimitsExceeded = 14
+    SubscriptionLimitsExceeded = 14,
 }

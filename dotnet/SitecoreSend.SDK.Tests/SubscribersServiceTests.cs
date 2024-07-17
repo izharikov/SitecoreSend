@@ -1,6 +1,4 @@
-﻿using SitecoreSend.SDK.Tests.Http;
-using SitecoreSend.SDK.Tests.Limiter;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests;
 

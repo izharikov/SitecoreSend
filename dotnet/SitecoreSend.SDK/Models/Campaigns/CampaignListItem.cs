@@ -14,7 +14,7 @@ public class CampaignListItem
     public DateTimeOffset CreatedOn { get; set; }
     public int? ABHoursToTest { get; set; }
     public ABCampaignType? ABCampaignType { get; set; }
-    public ABWinner? ABWinner { get; set; }
+    public ABVersion? ABWinner { get; set; }
     public ABWinnerSelectionType? ABWinnerSelectionType { get; set; }
     public CampaignStatus Status { get; set; }
     [JsonConverter(typeof(DateTimeConverter))]

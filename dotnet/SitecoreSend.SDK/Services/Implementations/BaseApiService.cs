@@ -50,39 +50,39 @@ public abstract class BaseApiService : IDisposable
         return result.ToString();
     }
 
-    protected async Task<T?> Get<T>(string url, CancellationToken? cancellationToken = null) where T : SendResponse, new()
+    protected async Task<T?> Get<T>(string url, CancellationToken? cancellationToken) where T : SendResponse, new()
     {
         return await Get<T>(_httpClient, url, cancellationToken);
     }
 
-    protected async Task<T?> Get<T>(HttpClient client, string url, CancellationToken? cancellationToken = null)
+    protected async Task<T?> Get<T>(HttpClient client, string url, CancellationToken? cancellationToken)
         where T : SendResponse, new()
     {
         var response = await client.GetAsync(url, cancellationToken ?? CancellationToken.None);
         return await ReadResponse<T>(response).ConfigureAwait(false);
     }
 
-    protected async Task<T?> Delete<T>(string url, CancellationToken? cancellationToken = null) where T : SendResponse, new()
+    protected async Task<T?> Delete<T>(string url, CancellationToken? cancellationToken) where T : SendResponse, new()
     {
         return await Delete<T>(_httpClient, url, cancellationToken);
     }
 
     protected async Task<T?> Delete<T>(HttpClient client, string url,
-        CancellationToken? cancellationToken = null) where T : SendResponse, new()
+        CancellationToken? cancellationToken) where T : SendResponse, new()
     {
         var response = await client.DeleteAsync(url, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
         return await ReadResponse<T>(response).ConfigureAwait(false);
     }
 
-    protected async Task<TResponse?> Post<TResponse>(string url, object body,
-        CancellationToken? cancellationToken = null) where TResponse : SendResponse, new()
+    protected async Task<TResponse?> Post<TResponse>(string url, object? body,
+        CancellationToken? cancellationToken) where TResponse : SendResponse, new()
     {
         return await Post<TResponse>(_httpClient, url, body, cancellationToken);
     }
 
-    protected async Task<TResponse?> Post<TResponse>(HttpClient client, string url, object body,
-        CancellationToken? cancellationToken = null) where TResponse : SendResponse, new()
+    protected async Task<TResponse?> Post<TResponse>(HttpClient client, string url, object? body,
+        CancellationToken? cancellationToken) where TResponse : SendResponse, new()
     {
         var response = await client.PostAsJsonAsync(url, body, cancellationToken ?? CancellationToken.None)
             .ConfigureAwait(false);
@@ -130,6 +130,7 @@ public abstract class BaseApiService : IDisposable
     {
         if (response.Headers.TryGetValues(key, out var values))
         {
+            // TODO: all date formats to constants
             if (DateTimeOffset.TryParseExact(values.FirstOrDefault(), "MM/dd/yyyy HH:mm:ss",
                     CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var result))
             {
