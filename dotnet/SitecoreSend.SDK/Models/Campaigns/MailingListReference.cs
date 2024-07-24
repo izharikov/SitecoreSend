@@ -2,6 +2,8 @@
 
 public class MailingListReference
 {
-    public Guid MailingListID { get; set; }
-    public int SegmentID { get; set; }
+    public string? Campaign { get; set; }
+    public Guid? MailingListID { get; set; }
+    public MailingList? MailingList { get; set; }
+    public int? SegmentID { get; set; }
 }

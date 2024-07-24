@@ -126,7 +126,7 @@ You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. O
 ### Documented API
 - [x] Mailing list service
 - [x] Subscribers service
-- [ ] Campaigns service (WIP)
+- [x] Campaigns service
 - [ ] Transactional Campaigns Methods
 - [ ] Segments service
 
@@ -139,4 +139,4 @@ You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. O
 - [ ] Tracking API
 
 ### SMTP API
-- [ ] SMTP
+- [x] SMTP: use `SitecoreSend.SDK.Extensions.SmtpExtensions`

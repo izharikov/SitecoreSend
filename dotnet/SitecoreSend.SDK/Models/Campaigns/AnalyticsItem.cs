@@ -7,7 +7,7 @@ public class AnalyticsItem
 {
     public string Context { get; set; }
     [JsonConverter(typeof(DateTimeConverter))]
-    public DateTimeOffset Timestamp { get; set; }
+    public DateTimeOffset? Timestamp { get; set; }
 
     public int TotalCount { get; set; }
     public int UniqueCount { get; set; }

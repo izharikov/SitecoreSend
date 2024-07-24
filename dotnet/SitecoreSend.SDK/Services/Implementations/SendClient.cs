@@ -7,6 +7,7 @@ public class SendClient : ISendClient
     public ICampaignService Campaigns { get; }
     public IMailingListService Lists { get; }
     public ISubscribersService Subscribers { get; }
+    public ISegmentsService Segments { get; }
 
     public SendClient(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
         RateLimiterConfiguration? rateLimiterConfiguration = null)

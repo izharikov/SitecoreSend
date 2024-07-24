@@ -1,6 +1,4 @@
-﻿using SitecoreSend.SDK.Models.Segments;
-
-namespace SitecoreSend.SDK;
+﻿namespace SitecoreSend.SDK;
 
 public class CampaignMailingList
 {

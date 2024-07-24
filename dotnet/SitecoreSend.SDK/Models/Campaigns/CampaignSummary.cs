@@ -12,7 +12,7 @@ public class CampaignSummary
     public List<MailingListReference> MailingLists { get; set; } = new List<MailingListReference>();
     
     [JsonConverter(typeof(DateTimeConverter))]
-    public DateTimeOffset CampaignDeliveredOn { get; set; }
+    public DateTimeOffset? CampaignDeliveredOn { get; set; }
     
     [JsonConverter(typeof(DateTimeConverter))]
     public DateTimeOffset? To { get; set; }
