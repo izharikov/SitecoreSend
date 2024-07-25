@@ -30,7 +30,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       env:
         SITECORESEND__APIKEY: ${{ secrets.SITECORESEND__APIKEY }}
         SITECORESEND__TESTLISTID: ${{ secrets.SITECORESEND__TESTLISTID }}
@@ -40,7 +40,7 @@ jobs:
         SITECORESEND__TESTEMAIL: ${{ secrets.SITECORESEND__TESTEMAIL }}
       run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
     - name: Test Reporter
-      if: github.ref == 'refs/heads/master' && (success() || failure())   # run this step even if previous step failed
+      if: github.ref == 'refs/heads/main' && (success() || failure())   # run this step even if previous step failed
       uses: bibipkins/dotnet-test-reporter@v1.4.0
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
