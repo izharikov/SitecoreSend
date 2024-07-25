@@ -2,7 +2,7 @@
 
 namespace SitecoreSend.SDK;
 
-public class EmptySegmentRequest
+public class SegmentRequest
 {
     public required string Name { get; set; }
 
@@ -13,4 +13,6 @@ public class EmptySegmentRequest
     public SegmentFetchType FetchType { get; set; }
 
     public int? FetchValue { get; set; }
+
+    public IList<CriteriaRequest>? Criteria { get; set; } = null;
 }

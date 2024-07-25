@@ -16,6 +16,7 @@ public class SendClient : ISendClient
         Lists = new MailingListService(apiConfiguration, httpClientFactory);
         Subscribers = new SubscribersService(apiConfiguration, httpClientFactory,
             rateLimiterConfiguration?.Subscribers);
+        Segments = new SegmentsService(apiConfiguration, httpClientFactory);
     }
 
     public void Dispose()
