@@ -34,6 +34,10 @@ jobs:
       env:
         SITECORESEND__APIKEY: ${{ secrets.SITECORESEND__APIKEY }}
         SITECORESEND__TESTLISTID: ${{ secrets.SITECORESEND__TESTLISTID }}
+        SITECORESEND__ABCAMPAIGNID: ${{ secrets.SITECORESEND__ABCAMPAIGNID }}
+        SITECORESEND__CAMPAIGNID: ${{ secrets.SITECORESEND__CAMPAIGNID }}
+        SITECORESEND__KNOWNSENDER: ${{ secrets.SITECORESEND__KNOWNSENDER }}
+        SITECORESEND__TESTEMAIL: ${{ secrets.SITECORESEND__TESTEMAIL }}
       run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=test-results.trx"
     - name: Test Reporter
       if: github.ref == 'refs/heads/master' && (success() || failure())   # run this step even if previous step failed
