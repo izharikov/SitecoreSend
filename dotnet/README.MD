@@ -12,6 +12,10 @@ Provides .NET wrapper around [Sitecore Send API](https://doc.sitecore.com/send/e
 var apiConfiguration = new ApiConfiguration
 {
     ApiKey = "[YOUR API KEY]",
+    Clients = new Dictionary<string, string>()
+    {
+        {"[YOUR CLIENT NAME / ALIAS]", "[YOUR CLIENT API KEY]"},
+    },
 };
 
 // or any other service
@@ -33,6 +37,7 @@ Configuration with DI:
 var apiConfiguration = new ApiConfiguration
 {
     ApiKey = "[YOUR API KEY]",
+    Clients = ...
 };
 serviceCollection.AddHttpClient("SitecoreSendClient",
     (client) => { client.BaseAddress = new Uri(apiConfiguration.BaseUri); });
@@ -42,6 +47,16 @@ serviceCollection.AddSingleton<ISendClient>(provider =>
     return new SendClient(apiConfiguration,
         () => factory.CreateClient("SitecoreSendClient"));
 });
+```
+
+## Clients switcher
+```csharp
+// 'Client1' should be added inside ApiConfiguration.Clients used in constructor
+using (new ClientSwitcher("Client1"))
+{
+    var clientLists = await _send.Lists.GetAll();
+    Assert.True(clientLists?.Success);
+}
 ```
 
 ## API Rate limit

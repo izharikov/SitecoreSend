@@ -36,7 +36,7 @@ public abstract class BaseApiService : IDisposable
     {
         var result = new StringBuilder(baseUrl);
         result.Append(Format);
-        result.Append("?apiKey=").Append(_apiConfiguration.ApiKey);
+        result.Append("?apiKey=").Append(GetCurrentApiKey());
         for (var i = 0; i < queryParams.Length; i += 2)
         {
             if (!string.IsNullOrEmpty(queryParams[i]?.ToString()) &&
@@ -48,6 +48,19 @@ public abstract class BaseApiService : IDisposable
         }
 
         return result.ToString();
+    }
+
+    private string GetCurrentApiKey()
+    {
+        var key = _apiConfiguration.ApiKey;
+        var client = ClientSwitcher.Current;
+        if (!string.IsNullOrEmpty(client) && _apiConfiguration.Clients.TryGetValue(client, out var val) &&
+            !string.IsNullOrEmpty(val))
+        {
+            key = val;
+        }
+
+        return key;
     }
 
     protected async Task<T?> Get<T>(string url, CancellationToken? cancellationToken) where T : SendResponse, new()

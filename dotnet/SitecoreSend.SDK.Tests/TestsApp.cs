@@ -25,6 +25,10 @@ public static class TestsApp
     public static ApiConfiguration ApiConfiguration => new()
     {
         ApiKey = Configuration.GetValue("SitecoreSend:ApiKey", string.Empty)!,
+        Clients = new Dictionary<string, string>()
+        {
+            {"Client1", Configuration.GetValue("SitecoreSend:ApiKey2", string.Empty)!},
+        },
     };
 
     private static IConfiguration CreateConfiguration()

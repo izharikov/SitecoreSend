@@ -123,6 +123,13 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task GetAllMailingLists_OnValidApiKey_ShouldReturnLists()
     {
+        using (new ClientSwitcher("Client1"))
+        {
+            var clientLists = await _send.Lists.GetAll();
+            Assert.True(clientLists?.Success);
+        }
+
         var lists = await _send.Lists.GetAll();
+        Assert.True(lists?.Success);
     }
 }
