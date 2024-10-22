@@ -13,6 +13,7 @@
         <None Include="appsettings.local.json" CopyToOutputDirectory="Always" Condition="Exists('.\appsettings.local.json')"/>
         <None Include="appsettings.json" CopyToOutputDirectory="Always"/>
         <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+        <None Include="icon.png" CopyToOutputDirectory="Always"/>
     </ItemGroup>
     
     <ItemGroup>

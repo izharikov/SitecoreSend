@@ -8,6 +8,7 @@ public class SendClient : ISendClient
     public IMailingListService Lists { get; }
     public ISubscribersService Subscribers { get; }
     public ISegmentsService Segments { get; }
+    public ITransactionalService Transactional { get; }
 
     public SendClient(ApiConfiguration apiConfiguration, Func<HttpClient?>? httpClientFactory = null,
         RateLimiterConfiguration? rateLimiterConfiguration = null)
@@ -17,6 +18,7 @@ public class SendClient : ISendClient
         Subscribers = new SubscribersService(apiConfiguration, httpClientFactory,
             rateLimiterConfiguration?.Subscribers);
         Segments = new SegmentsService(apiConfiguration, httpClientFactory);
+        Transactional = new TransactionalEmailService(apiConfiguration, httpClientFactory);
     }
 
     public void Dispose()

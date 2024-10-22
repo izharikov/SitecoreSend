@@ -49,6 +49,29 @@ serviceCollection.AddSingleton<ISendClient>(provider =>
 });
 ```
 
+## Transactional Campaigns
+```csharp
+var request = EmailRequestBuilder.StartWithCampaign(campaign)
+    .AddPersonalization(new Personalization(testEmail, "Igor Zharikov")
+    {
+        Substitutions = new Dictionary<string, string>()
+        {
+            {"orderNumber", "123456"},
+            {"paymentMethod", "PayTest"},
+            {"total", "123.00 USD"},
+        },
+    })
+    .AddAttachment(new EmailAttachment()
+    {
+        Content = AttachmentTool.StreamToBase64(File.OpenRead("icon.png")),
+        Type = "image/png",
+        FileName = "icon.png",
+    })
+    .Build();
+
+var result = await _send.Transactional.Send(request);
+```
+
 ## Clients switcher
 ```csharp
 // 'Client1' should be added inside ApiConfiguration.Clients used in constructor
@@ -143,7 +166,7 @@ You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. O
 - [x] Subscribers service
 - [x] Campaigns service
 - [x] Segments service
-- [ ] Transactional Campaigns Methods
+- [x] Transactional Campaigns Methods
 
 ### Internal API
 - [ ] Websites management

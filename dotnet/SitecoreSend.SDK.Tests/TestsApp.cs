@@ -28,6 +28,7 @@ public static class TestsApp
         Clients = new Dictionary<string, string>()
         {
             {"Client1", Configuration.GetValue("SitecoreSend:ApiKey2", string.Empty)!},
+            {"Transactional", Configuration.GetValue("SitecoreSend:TransactionalApiKey", string.Empty)!},
         },
     };
 
