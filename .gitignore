@@ -398,6 +398,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 *.local.json
+*.local.jsonc
 .idea
 *.csproj.DotSettings
 .vscdode

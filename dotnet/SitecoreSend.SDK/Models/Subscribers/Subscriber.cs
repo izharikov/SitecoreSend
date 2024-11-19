@@ -23,6 +23,7 @@ public class Subscriber
     [JsonConverter(typeof(DateTimeConverter))]
     public DateTimeOffset? RemovedOn { get; set; }
     public List<string> Tags { get; set; } = [];
+    public List<string> Preferences { get; set; } = [];
 
     public object? this[string name]
     {
@@ -52,5 +53,6 @@ public class Subscriber
         Name = s.Name,
         CustomFields = s.CustomFields,
         Tags = s.Tags,
+        Preferences = s.Preferences,
     };
 }

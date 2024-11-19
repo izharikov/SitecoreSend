@@ -35,4 +35,7 @@ public class CampaignListItem
     public bool IsTransactional { get; set; }
     public int TotalComplaints { get; set; }
     public int TotalUnsubscribes { get; set; }
+    public string? CampaignSource { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public CampaignType CampaignType { get; set; }
 }

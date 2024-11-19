@@ -1,0 +1,23 @@
+﻿{
+  "SitecoreSend": {
+    "ApiKey": "", // API key for primary account
+    "ApiKey2": "", // API key for additional client (to test ClientSwitcher)
+    "TransactionalApiKey": "", // Transactional API key (copy value from ApiKey primary account supports it)
+    "TestListId": "", // Test list ID
+    "TestExistingSubscriber": "sdk.testuser@gmail.com", // Existing subscriber email (should exist in test list)
+    "NewSubscriber": "single-email@gmail.com", // New subscriber email
+    "NewMultipleSubscribers": [ // New multiple subscribers emails
+      "zharikovigor97+test1@gmail.com",
+      "zharikovigor97+test2@gmail.com"
+    ],
+    "CampaignId": "", // Existing campaign ID
+    "AbCampaignId": "", // Existing AB campaign ID
+    "TransactionalCampaignId": "", // Existing transactional campaign
+    "KnownSender": "", // Known sender email, should already exist in Sitecore Send
+    "TestEmail": "",
+    "SkipSend": false // Skip send campaigns (e.g. when you want to test only API)
+  },
+  "UnitTests": {
+    "HideSecrets": true // Hide API keys and emails in test outputs
+  }
+}

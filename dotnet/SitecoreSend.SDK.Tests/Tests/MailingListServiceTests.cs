@@ -26,6 +26,11 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
             Name = "Test Name 2",
             ConfirmationPage = "http://localhost/confirm",
             RedirectAfterUnsubscribePage = "http://localhost/redirect",
+            Preferences = new MailingListPreferencesRequest()
+            {
+                Options = ["Option1", "Option2"],
+                SelectType = PreferenceSelectType.MultiSelect,
+            },
         });
 
         Assert.NotNull(updateListResult);
@@ -36,7 +41,11 @@ public class MailingListServiceTests(ITestOutputHelper testOutputHelper)
         Assert.NotNull(getListResult?.Data);
         Assert.Equal(result.Data, getListResult.Data.ID);
         Assert.Equal("Test Name 2", getListResult.Data.Name);
-
+        Assert.NotNull(getListResult.Data.Preferences);
+        Assert.NotEmpty(getListResult.Data.Preferences.Options);
+        Assert.Equal(PreferenceSelectType.MultiSelect, getListResult.Data.Preferences.SelectType);
+        Assert.Collection(getListResult.Data.Preferences.Options, x => Assert.Equal("Option1", x), x => Assert.Equal("Option2", x));
+            
         // cleanup
         await DeleteListAndAssertDeleted(result.Data);
     }

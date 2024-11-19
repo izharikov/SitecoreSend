@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Xunit.Abstractions;
 
 namespace SitecoreSend.SDK.Tests.Http;
@@ -7,6 +8,11 @@ public partial class LogHttpHandler : DelegatingHandler
 {
     private readonly ITestOutputHelper testOutputHelper;
     private readonly bool _hideSecrets;
+    
+    private static JsonSerializerOptions _prettyPrintJsonSerializerOptions = new()
+    {
+        WriteIndented = true,
+    };
 
     public LogHttpHandler(ITestOutputHelper testOutputHelper, HttpMessageHandler handler, bool hideSecrets = true)
     {
@@ -29,7 +35,13 @@ public partial class LogHttpHandler : DelegatingHandler
         var response = await base.SendAsync(request, cancellationToken);
 
         testOutputHelper.WriteLine("Response: " + HideSecrets(response.ToString()));
-        testOutputHelper.WriteLine(HideSecrets(await response.Content.ReadAsStringAsync(cancellationToken)));
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (!string.IsNullOrEmpty(content) && response.Content.Headers.ContentType?.MediaType == "application/json")
+        {
+            var responseObject = JsonSerializer.Deserialize<object>(content);
+            content = JsonSerializer.Serialize(responseObject, _prettyPrintJsonSerializerOptions);
+        }
+        testOutputHelper.WriteLine(HideSecrets(content));
         testOutputHelper.WriteLine(string.Empty);
 
         return response;

@@ -20,6 +20,8 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         subscriber.Data[dateFieldName] = date;
         subscriber.Data.Tags.Clear();
         subscriber.Data.Tags.Add("Tag1");
+        subscriber.Data.Preferences.Clear();
+        subscriber.Data.Preferences.Add("Sport");
         subscriber = await _send.Subscribers.Update(listId, subscriber.Data.ID, subscriber.Data);
         Assert.True(subscriber?.Success);
         Assert.NotNull(subscriber?.Data);
@@ -42,6 +44,7 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
         {
             Email = email,
             CustomFields = [("DateField", DateTimeOffset.Now)],
+            Preferences = ["Technology"],
         });
         Assert.NotNull(response?.Data);
         Assert.Equal(email, response.Data.Email);
@@ -200,6 +203,7 @@ public class SubscribersServiceTests(ITestOutputHelper testOutputHelper)
                     Subscribers = emails.Select(x => new SubscriberRequest()
                     {
                         Email = x,
+                        Preferences = ["Environment", "Sport"],
                     }).ToList(),
                 });
             Assert.True(addSubscribers?.Success);

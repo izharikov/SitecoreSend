@@ -18,9 +18,7 @@ var apiConfiguration = new ApiConfiguration
     },
 };
 
-// or any other service
 ISendClient send = new SendClient(apiConfiguration);
-
 var response = await send.Lists.GetAll();
 
 // ensure response is not null and Success is true
@@ -29,6 +27,10 @@ if (response is {Success: true})
     IList<MailingList>? allLists = response.Data?.MailingLists;
     // handle allLists
 }
+
+// internal API
+var internalApi = new InternalApi(InternalApiConfiguration.Create(apiConfiguration));
+var allWebsites = await internalApi.Websites.GetAll();
 ```
 
 Configuration with DI:
@@ -142,20 +144,7 @@ _send.Subscribers.EnsureSubscribed(listId, email, subscribeIfNotExists);
 Integration tests are located in `SitecoreSend.SDK.Tests` project.
 
 ### Running locally
-Create file `appsettings.local.json` in `SitecoreSend.SDK.Tests` project.
-
-Fill it with the following content:
-```json5
-{
-  "SitecoreSend": {
-    "ApiKey": "[YOUR API KEY]",
-    "TestListId": "[TEST LIST ID]"
-  },
-  "UnitTests": {
-    "HideSecrets": false // specify, if hide api secrets and emails in test outputs 
-  }
-}
-```
+Create file `appsettings.local.jsonc` based on `appsettings.jsonc` in `SitecoreSend.SDK.Tests` project and populate it with your own values.
 
 ## Contribute / Bug / Help
 You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. Or please open an [issue](https://github.com/izharikov/SitecoreSend/issues/new).
@@ -169,9 +158,10 @@ You can contact me via email or in Sitecore Slack: `zharikovigor97@gmail.com`. O
 - [x] Transactional Campaigns Methods
 
 ### Internal API
-- [ ] Websites management
+- [x] Websites management (WIP)
 - [ ] Automations
 - [ ] Senders API
+- [ ] Landing Pages
 
 ### Tracking API
 - [ ] Tracking API

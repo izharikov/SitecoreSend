@@ -93,6 +93,11 @@ public class CampaignsServiceTest(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task Campaigns_CreateCampaignSend_ShouldPerformOperations()
     {
+        if (!TestsApp.SendCampaigns)
+        {
+            return;
+        }
+
         var knownSender = TestsApp.Configuration.GetSection("SitecoreSend:KnownSender").Value!;
         var listId = Guid.Parse(TestsApp.Configuration.GetSection("SitecoreSend:TestListId").Value!);
         var testEmail = TestsApp.Configuration.GetSection("SitecoreSend:TestEmail").Value!;

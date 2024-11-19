@@ -20,4 +20,5 @@ public class MailingList
     [JsonConverter(typeof(DateTimeConverter))]
     public DateTimeOffset UpdatedOn { get; set; }
     public ImportOperation? ImportOperation { get; set; }
+    public MailingListPreferences? Preferences { get; set; }
 }

@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SitecoreSend.SDK.Internal;
+using SitecoreSend.SDK.Internal.Configuration;
+using SitecoreSend.SDK.Internal.Implementations;
 using SitecoreSend.SDK.Tests.Http;
 using SitecoreSend.SDK.Tests.Limiter;
 using Xunit.Abstractions;
@@ -8,6 +11,8 @@ namespace SitecoreSend.SDK.Tests;
 public static class TestsApp
 {
     public static readonly IConfiguration Configuration = CreateConfiguration();
+
+    public static bool SendCampaigns => !Configuration.GetValue("SitecoreSend:SkipSend", false);
 
     public static readonly Func<ITestOutputHelper, ISendClient> SendFactory = (ITestOutputHelper helper) =>
         new SendClient(ApiConfiguration, () => CustomHttpFactory.Create(helper), new RateLimiterConfiguration()
@@ -21,6 +26,10 @@ public static class TestsApp
                 UnsubscribeFromListAndCampaign = SendRateLimits.UnsubscribeFromListAndCampaign.ExecuteAsync,
             },
         });
+
+    public static readonly Func<ITestOutputHelper, ISendInternalAPI> SendInternalAPIFactory =
+        helper => new SendInternalAPIClient(InternalApiConfiguration.Create(ApiConfiguration),
+            () => CustomHttpFactory.Create(helper));
     
     public static ApiConfiguration ApiConfiguration => new()
     {
@@ -35,8 +44,8 @@ public static class TestsApp
     private static IConfiguration CreateConfiguration()
     {
         var builder = new ConfigurationBuilder();
-        builder.AddJsonFile("./appsettings.json");
-        builder.AddJsonFile("./appsettings.local.json", optional: true);
+        builder.AddJsonFile("./appsettings.jsonc");
+        builder.AddJsonFile("./appsettings.local.jsonc", optional: true);
         builder.AddEnvironmentVariables();
         var config = builder.Build();
         return config;
